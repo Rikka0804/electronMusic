@@ -2,6 +2,9 @@ import { app,  BrowserWindow, ipcMain } from 'electron'
 
 import { electronApp, optimizer} from '@electron-toolkit/utils'
 import MainFrame from './frame/MainFrame'
+import routers from './router/router.template'
+import EventRouter from './router/EventRouter'
+
 
 
 // This method will be called when Electron has finished
@@ -18,12 +21,20 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+
+
+
+  const eventRouter = new EventRouter()
 
   let mainWindow = new MainFrame()
   mainWindow.create()
   // createWindow()
+  eventRouter.addApi('mainWindow',mainWindow)
+  eventRouter.addRouters(routers)
+  ipcMain.handle('renderer-to-main',(e,data) => {
+    eventRouter.router(data)
+  })
+
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

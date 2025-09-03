@@ -3,14 +3,16 @@ import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import icon from '../../../resources/icon.png?asset'
 export default class MainFrame {
-  #frame:any = null;
-  #width = 900;
-  #height = 670;
+  #frame: any = null;
+  #width = 1150;
+  #height = 750;
   create() {
     this.#frame = new BrowserWindow({
       width: this.#width,
       height: this.#height,
       show: false,
+      frame: false,
+      resizable: false,
       autoHideMenuBar: true,
       ...(process.platform === 'linux' ? { icon } : {}),
       webPreferences: {
@@ -33,5 +35,9 @@ export default class MainFrame {
     } else {
       this.#frame.loadFile(join(__dirname, '../renderer/index.html'))
     }
+  }
+
+  close() {
+    this.#frame.close();
   }
 }

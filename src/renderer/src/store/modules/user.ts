@@ -1,16 +1,22 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
+import type {getUserAccountRes} from '@/types/user'
 
 export const useUserStore = defineStore(
   'my-user',
   () => {
-    const user = ref(null)
-    const setUser = (val) => {
-      user.value = val
+    const cookie = ref<string>('')
+    const isLogin = ref<boolean>(false)
+    const setCookie = (val: string) => {
+      cookie.value = val
+    }
+    const userInfo = ref<getUserAccountRes>()
+    const setUser = (val: getUserAccountRes) => {
+      isLogin.value = true
+      userInfo.value = val
     }
 
-    return { user, setUser }
+    return { userInfo, setUser, cookie, setCookie , isLogin }
   },
   {
     persist: true

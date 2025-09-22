@@ -1,4 +1,6 @@
-import './assets/main.css'
+import './assets/main.scss'
+import './assets/iconfont/iconfont.css'
+import './assets/iconfont/iconfont.js'
 const app = createApp(App)
 
 import { createApp } from 'vue'

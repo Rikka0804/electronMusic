@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 * {
   margin: 0;
   padding: 0;
@@ -9,6 +12,7 @@ a {
   text-decoration: none;
   color: #333;
 }
+
 html,body,#app {
   height: 100%;
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -16,3 +20,16 @@ html,body,#app {
   -moz-osx-font-smoothing: grayscale;
 
 }
+
+.drag{
+  -webkit-app-region: drag;
+}
+
+// @mixin textOverflow($line: 1) {
+//   text-overflow: ellipsis;
+//   display: -webkit-box;
+//   -webkit-box-orient: vertical;
+//   -webkit-line-clamp: $line;
+//   overflow: hidden;
+// }
+

@@ -1,4 +1,3 @@
-import './assets/main.scss'
 import './assets/iconfont/iconfont.css'
 import './assets/iconfont/iconfont.js'
 const app = createApp(App)
@@ -29,8 +28,9 @@ app.use(ElementPlus, {
 
 
 // 全局组件
-// import InitComponent from '@/plugins/components'
+import InitComponent from '@/plugins/components'
 
-// app.use(InitComponent)
+app.use(InitComponent)
 
+import "@/assets/main.scss"
 app.mount('#app')

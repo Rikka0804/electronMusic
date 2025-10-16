@@ -12,8 +12,11 @@ export type Profile = {
   province: number // 省份id
   city: number // 城市id
   signature: string // 用户签名
+  level: number // 等级
+  createDays: number // 创建天数
 }
 export type getUserAccountRes = {
+
   account: {
     anonimousUser: boolean // 是否匿名用户
     createTime: number

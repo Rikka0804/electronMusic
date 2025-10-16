@@ -1,0 +1,12 @@
+@mixin textOverflow($line: 1) {
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $line; // 使用参数控制显示的行数
+  overflow: hidden;
+}
+$text: rgb(210, 210, 210);
+$darkText: rgb(150, 150, 150);
+$moreDark: rgba(150, 150, 150, 0.60);
+$subject: rgb(236, 65, 65);
+$bgColor: rgb(19, 19, 26);

@@ -17,7 +17,13 @@ export default defineConfig({
     css: {
       postcss: {
         plugins: [tailwindcss],
+      },
+       preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@/assets/_mixins" as *;`
+
       }
+    }
     },
     resolve: {
       alias: {

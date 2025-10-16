@@ -1,13 +1,21 @@
+import { useFlags } from '@/store'
+import { useRouter } from 'vue-router'
+
+export const beforeEach = (to, from, next) => {
 
 
-export const beforeEach = (to: any) => {
 
-  return true;
+  next()
 }
 
 
 
 //后置
 export const afterEach = () => {
-  console.log('后置');
+  const flags = useFlags()
+  const router = useRouter()
+  const position = router.options.history.state.position
+  console.log(position);
+
+  flags.forward(position)
 }

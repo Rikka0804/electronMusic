@@ -7,6 +7,11 @@ export const AppRoutes = [
     component: () => import('@/views/layout/index.vue'),
     children: [
       {
+        path: '/userInfo',
+        name: '用户信息',
+        component: () => import('@/views/userInfo/index.vue')
+      },
+      {
         path: '/home',
         name: '为我推荐',
         component: () => import('@/views/home/index.vue')

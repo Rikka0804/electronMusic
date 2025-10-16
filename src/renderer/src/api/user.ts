@@ -6,4 +6,4 @@ export const getUserInfoApi = () => request<getUserAccountRes>('/user/account', 
 
 // 获取用户详情
 export const getUserDetailApi = (uid: number) =>
-  request('/user/detail', 'get', { uid })
+  request<{level:number ,createDays:number}>('/user/detail', 'get', { uid })

@@ -1,0 +1,29 @@
+/* 全局滚动条样式 */
+* {
+  // WebKit 浏览器
+  &::-webkit-scrollbar {
+    width: 6px;   // 垂直滚动条宽度
+    height: 8px;  // 水平滚动条高度
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent; // 滚动条轨道
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.18s ease, visibility 0.18s;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  // Firefox 浏览器
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}

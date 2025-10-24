@@ -1,18 +1,18 @@
 <template>
-  <div class="userCard flex  w-[87vw-180px]">
+  <div class="userCard flex  w-[87vw-180px]" v-loading="loading">
     <div class="userAvator">
-      <el-avatar :size="180" :src="userInfo?.avatarUrl" />
+      <el-avatar :size="180" :src="props.userInfo?.avatarUrl" />
     </div>
     <div class="userInfo flex-1 ml-[20px] flex flex-col justify-center">
       <div class="userName text-[25px] ">
-        {{ userInfo?.nickname }}
+        {{ props.userInfo?.nickname }}
       </div>
       <div class="levelAndCreateDays flex items-center text-[14px]">
         <div class="level mr-[15px] ">
-          Lv.{{ userInfo?.level }}
+          Lv.{{ props.userInfo?.level }}
         </div>
         <div class="createDays">
-          注册天数：{{ userInfo?.createDays }}天
+          注册天数：{{ props.userInfo?.createDays }}天
         </div>
       </div>
       <div class="addressInfo flex text-[14px] ">
@@ -31,14 +31,19 @@
 
 <script lang="ts" setup>
 import { province, city } from 'province-city-china/data'
-import { useUserStore } from '@/store'
-const userStore = useUserStore()
-const userInfo = userStore.userInfo?.profile
-
-const provinceName = province.find(item => item.code == userInfo?.province)?.name
-const cityName = city.find(item => item.code == userInfo?.city)?.name
-
-
+import {computed} from 'vue'
+import {Profile} from '@/types/user'
+interface props {
+  userInfo: Profile | undefined,
+  loading: boolean,
+}
+const props = defineProps<props>()
+const provinceName = computed(() => {
+  return province.find(item => item.code == props.userInfo?.province)?.name
+})
+const cityName = computed(() => {
+  return city.find(item => item.code == props.userInfo?.city)?.name
+})
 
 </script>
 

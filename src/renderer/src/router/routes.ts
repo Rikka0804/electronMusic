@@ -35,6 +35,11 @@ export const AppRoutes = [
         path:'/cloud',
         name:'我的音乐云盘',
         component:()=>import('@/views/cloud/index.vue')
+      },
+      {
+        path:'/playList',
+        name:'歌单',
+        component:()=>import('@/views/playList/index.vue')
       }
 
     ]

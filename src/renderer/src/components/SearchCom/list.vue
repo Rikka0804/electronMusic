@@ -15,7 +15,7 @@
               <span class="name font-[600] text-[14px] mr-[5px]">
                 {{ item.searchWord }}
               </span>
-              <img v-if="item.iconUrl" :src="item.iconUrl" class="icon size-[13px]">
+              <img v-if="item.iconUrl" :src="item.iconUrl" class="icon size-[15px]">
             </div>
             <div class="desc text-[11px] ">
               {{ item.content }}

@@ -26,3 +26,19 @@ export type getUserAccountRes = {
   code: number
   profile: Profile
 }
+
+export interface getUserDetailRes {
+  code: number
+  createDays: number
+  createTime: number
+  level: number // 等级
+  profile: Profile
+  userPoint: {
+    balance: number
+    blockBalance: number
+    status: number
+    updateTime: number
+    userId: number
+    version: number
+  }
+}

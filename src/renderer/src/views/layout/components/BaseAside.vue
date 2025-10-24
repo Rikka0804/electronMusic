@@ -1,5 +1,5 @@
 <template>
-  <div class="aside h-full w-[15%] box-border">
+  <div class="aside h-full w-[195px] box-border">
     <div class="avator-box flex ">
       <div class="h-[70px] w-full flex items-center cursor-pointer justify-center" @click="handleLogin"
         v-if="!userStore.isLogin">
@@ -17,7 +17,7 @@
         <template v-else>
           <div v-for="item in menuItem.list" :style="{ fontSize: item.asideFontSize + 'px' || '' }"
             :class="['play-list-item', { current: isCurrent(item.path) }]" @click="itemClick(item)">
-            <i v-if="item.icon" :class="['iconfont', item.icon || '']"></i>
+            <i v-if="item.icon" :class="['iconfont', item.icon || '']" class="mr-[5px]"></i>
             <span>{{ item.name }}</span>
           </div>
         </template>
@@ -92,8 +92,6 @@ const isCurrent = (path: string) => {
       display: flex;
       align-items: center;
       margin: 7px 0;
-      @include textOverflow(1);
-
       .name {
         margin-left: 10px;
 

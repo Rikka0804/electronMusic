@@ -1,7 +1,7 @@
 <template>
    <el-tabs v-bind="$attrs" class="bass-tabs" v-model="activeName">
     <el-tab-pane v-for="(item, index) in props.list" :key="index" :label="item.label" :name="item.name">
-
+      <slot></slot>
     </el-tab-pane>
    </el-tabs>
 
@@ -9,18 +9,27 @@
 </template>
 
 <script lang="ts" setup name="Tabs" >
-import { ref } from 'vue'
-import { listItem , list } from '@/views/userInfo/config'
+import { computed } from 'vue'
+import { listItem } from '@/views/userInfo/config'
 
-const activeName = ref(list[0].name)
+
 
 interface Props {
-  list: listItem[]
+  list: listItem[],
+  modelValue: string
 }
 defineOptions({
   name: 'Tabs'
 })
 const props = defineProps<Props>()
+
+const emit = defineEmits(['update:modelValue'])
+
+// 用 computed 双向绑定
+const activeName = computed({
+  get: () => props.modelValue,
+  set: (val) => emit('update:modelValue', val)
+})
 
 </script>
 
@@ -48,7 +57,6 @@ const props = defineProps<Props>()
   }
 
   .el-tabs__content {
-    padding-top: 20px;
     text-align: left;
   }
 }

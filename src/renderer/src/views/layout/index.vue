@@ -4,11 +4,13 @@
   <div class="layout relative">
     <div class="box">
       <BaseAside></BaseAside>
-      <div class="content flex-1 px-[40px]">
-        <BaseHeader></BaseHeader>
-        <div class="content-box h-[100vh-75px] overflow-auto overflow-y-auto">
+      <div class="content flex-1 ">
+        <div class="header-wrapper px-[40px]">
+          <BaseHeader />
+        </div>
+        <div class="content-box h-[calc(100vh-75px)] overflow-auto overflow-y-aut px-[40px]">
           <router-view v-slot="{ Component }">
-            <component :key="refresh" :is="Component"></component>
+            <component :is="Component"></component>
           </router-view>
         </div>
       </div>
@@ -21,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted,ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useUserStore } from '@/store';
 import { getUserInfoApi, getUserDetailApi } from '@/api/user'
 import BaseAside from './components/BaseAside.vue'

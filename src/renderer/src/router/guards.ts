@@ -15,7 +15,5 @@ export const afterEach = () => {
   const flags = useFlags()
   const router = useRouter()
   const position = router.options.history.state.position
-  console.log(position);
-
   flags.forward(position)
 }

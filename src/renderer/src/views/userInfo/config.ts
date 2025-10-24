@@ -4,9 +4,6 @@ export const list = [{
 },{
   label: '收藏的歌单',
   name: 'collectSongList',
-},{
-  label: '创建的音乐专栏',
-  name: 'createSpecial',
 }]
 
 export interface listItem {

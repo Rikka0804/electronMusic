@@ -26,10 +26,12 @@
     "@element-plus/icons-vue": "^2.3.2",
     "@tailwindcss/vite": "^4.1.13",
     "axios": "^1.11.0",
+    "colorthief": "^2.6.0",
     "element-plus": "^2.11.1",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.5.0",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "vue3-virtual-scroller": "^0.2.3"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",

@@ -14,20 +14,24 @@ import { getUserDetailApi } from '@/api/user'
 import { PlayList } from '@/types/musicList'
 import {Profile} from '@/types/user'
 import { useRoute } from 'vue-router';
-import { useUserStore } from '@/store'
-import { ref } from 'vue';
+import { useUserStore ,useThemeStore} from '@/store'
+import { ref ,watch} from 'vue';
 
 const route = useRoute()
-const type = route.query.type
+const type = ref()
 const userStore = useUserStore()
+const themeStore = useThemeStore()
 const uid = ref()
 const list = ref<PlayList[]>([])
 const loading = ref(false)
 const userLoading = ref(false)
 const userInfo = ref<Profile>()
+
 const init = async () => {
   loading.value = true
-  if (type === 'my') {
+  list.value = []
+  type.value = route.query.type
+  if (type.value === 'my') {
     uid.value = userStore.userInfo?.account.id
     userInfo.value = userStore.userInfo?.profile
   } else {
@@ -39,12 +43,18 @@ const init = async () => {
     userInfo.value.createDays = res.createDays
     userLoading.value = false
   }
+  themeStore.change(userInfo.value?.avatarUrl)
   const res = await getUserPlayList(uid.value)
   loading.value = false
   list.value = res.playlist
 }
 init()
-
+watch(
+  () => route.query.uid,
+  () => {
+    init()
+  }
+)
 
 
 

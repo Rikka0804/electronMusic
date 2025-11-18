@@ -11,3 +11,4 @@ export default pinia
 export * from './modules/user'
 export * from './modules/flags'
 export * from './modules/music'
+export * from './modules/theme'

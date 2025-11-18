@@ -9,8 +9,12 @@ export const useMusicStore = defineStore('my-music', () => {
     val.name = val.specialType === 5 ? '我喜欢的歌单' : val.name
     currentItem.value = val
   }
+  const clearCurrentItem = () => {
+    currentItem.value = null
+  }
   return {
     currentItem,
+    clearCurrentItem,
     updateCurrentItem
   }
 

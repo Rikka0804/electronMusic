@@ -1,8 +1,10 @@
-import { useFlags } from '@/store'
+import { useFlags ,useThemeStore} from '@/store'
 import { useRouter } from 'vue-router'
 
-export const beforeEach = (to, from, next) => {
 
+export const beforeEach = (to, from, next) => {
+  const themeStore = useThemeStore()
+  themeStore.change()
 
 
   next()

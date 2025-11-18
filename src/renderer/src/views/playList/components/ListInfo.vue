@@ -1,5 +1,5 @@
 <template>
-  <div class="listInfo flex" v-if="musicStore.currentItem?.coverImgUrl">
+  <div class="listInfo flex" v-if="musicStore.currentItem?.coverImgUrl" >
     <div class="left bgSetting mr-[20px]" ref="left">
       <span class="count">
         <el-icon class="mr-[5px]">
@@ -45,17 +45,25 @@
     </div>
 
   </div>
+  <div class=" h-[180px]" v-else v-loading="props.loading">
+  </div>
+
 
 </template>
 
 <script setup lang="ts">
-import { useMusicStore, useUserStore } from '@/store/index';
+import { useMusicStore, useUserStore ,useThemeStore } from '@/store/index';
 import { toggleImg, formatNumberToMillion, formatDate } from '@/utils/utils';
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router';
 const musicStore = useMusicStore()
 const userStore = useUserStore()
+const themeStore = useThemeStore()
 const left = ref<HTMLDivElement>()
+interface Props {
+  loading: boolean
+}
+const props = defineProps<Props>()
 
 watch(() => musicStore.currentItem?.coverImgUrl,
   (val) => {
@@ -65,6 +73,7 @@ watch(() => musicStore.currentItem?.coverImgUrl,
           left.value!.style.backgroundImage = `url(${img.src})`
         }
       })
+      themeStore.change(val)
     }
   }, {
   immediate: true

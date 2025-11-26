@@ -16,7 +16,12 @@ export const useUserStore = defineStore(
       userInfo.value = val
     }
 
-    return { userInfo, setUser, cookie, setCookie , isLogin }
+    const userLikeIds = ref<number[]>([])
+    const setUserLikeIds = (val: number[]) => {
+      userLikeIds.value = val
+    }
+
+    return { userInfo, setUser, cookie, setCookie , isLogin ,userLikeIds,setUserLikeIds}
   },
   {
     persist: true

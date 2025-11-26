@@ -55,3 +55,15 @@ export function formatDate(timestamp: number, format = 'YYYY-MM-DD HH:mm:ss') {
     .replace(/mm/g, String(minute))
     .replace(/ss/g, String(second));
 }
+
+export function formattingTime(msec: number, isMsec = true) {
+  let result = ''
+  const s = isMsec ? msec / 1000 : msec
+  const sec = Math.floor(s % 60)
+  const minute = Math.floor((s - sec) / 60)
+
+  result = `${minute.toString().length <= 1 ? '0' + minute : minute
+    }:${sec.toString().length <= 1 ? '0' + sec : sec}`
+
+  return result
+}

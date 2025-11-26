@@ -1,11 +1,16 @@
-import { useFlags ,useThemeStore} from '@/store'
+import { useFlags, useThemeStore } from '@/store'
 import { useRouter } from 'vue-router'
 
+let isFirstEnter = true
 
 export const beforeEach = (to, from, next) => {
   const themeStore = useThemeStore()
-  themeStore.change()
+  if (!isFirstEnter) {
 
+    themeStore.change()
+  }
+
+  isFirstEnter = false
 
   next()
 }

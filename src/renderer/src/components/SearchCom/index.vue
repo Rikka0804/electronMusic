@@ -77,7 +77,7 @@ watch(keywords, (newVal) => {
       hightLight(allMatch)
       state.keywordsList = allMatch
       timer = null
-    }, 500)
+    }, 1500)
   } else {
     model.value = 'hot'
     state.keywordsList = []

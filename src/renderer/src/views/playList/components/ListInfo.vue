@@ -1,5 +1,5 @@
 <template>
-  <div class="listInfo flex" v-if="musicStore.currentItem?.coverImgUrl" >
+  <div class="listInfo flex" v-if="!props.loading && musicStore.currentItem?.coverImgUrl" >
     <div class="left bgSetting mr-[20px]" ref="left">
       <span class="count">
         <el-icon class="mr-[5px]">

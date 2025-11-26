@@ -49,7 +49,8 @@ export interface GetPlayListDetailRes {
 }
 export type CurrentItem = Omit<GetPlayListDetailRes['playlist']>
 
-export type GetMusicDetailData = {
+// 歌曲详情
+export interface GetMusicDetailData  {
   al: {
     // 名称详情
     id: number
@@ -69,4 +70,14 @@ export type GetMusicDetailData = {
   id: number
   pop: number
   album: string
+  _duration?: string
+}
+
+export interface GetMusicDetailRes {
+  code: number
+  songs: GetMusicDetailData[]
+}
+
+export interface CurrentItem extends PlayList  {
+  tracks: GetMusicDetailData[] | { id: number }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="h-[15px] drag"></div>
-  <div class="header h-[60px] w-full flex justify-between">
+  <div class="header h-[60px] w-full flex justify-between items-center">
     <div class="left h-full flex items-center">
       <div class="flip pr-[15px]">
         <el-icon @click="back" :class="{ disable: flags.count === 0 }">

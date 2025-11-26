@@ -2,7 +2,7 @@
   <div class="songList w-full p-[20px] rounded-[20px] mt-[20px]">
     <Tabs :list="list" v-model="currentList">
       <div class="listContent" v-loading="loading">
-        <Card v-if="userStore.userInfo?.profile.userId === props.uid && currentList === 'createSongList'" :picUrl="img"
+        <Card v-if="userStore.userInfo?.profile.userId === props.uid && currentList === 'createSongList' && !loading" :picUrl="img"
           name="我的听歌排行榜" />
         <Card v-for="item in playlist" :key="item.id" :picUrl="item.coverImgUrl" :name="item.name"
           :playCount="item.playCount" :trackCount="item.trackCount" @click="handleCardClick(item.id)" />

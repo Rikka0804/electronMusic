@@ -52,27 +52,27 @@ body {
   -webkit-app-region: drag;
 }
 
-.body {
-  height: calc(100% - 60px);
-  padding-bottom: 130px;
-  overflow: hidden;
-  overflow-y: auto;
-  width: 100%;
-  display: flex;
-  align-content: baseline;
-  flex-direction: column;
-  .top {
-    margin-bottom: 20px;
-  }
-  .bottom {
-    //height: 80px;
-    //width: 100%;
-  }
-  .padding-container {
-    padding: 0 50px;
-    padding-bottom: 30px;
-  }
-}
+// .body {
+//   height: calc(100% - 60px);
+//   padding-bottom: 130px;
+//   overflow: hidden;
+//   overflow-y: auto;
+//   width: 100%;
+//   display: flex;
+//   align-content: baseline;
+//   flex-direction: column;
+//   .top {
+//     margin-bottom: 20px;
+//   }
+//   .bottom {
+//     //height: 80px;
+//     //width: 100%;
+//   }
+//   .padding-container {
+//     padding: 0 50px;
+//     padding-bottom: 30px;
+//   }
+// }
 
 
 

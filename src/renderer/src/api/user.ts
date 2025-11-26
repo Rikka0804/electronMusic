@@ -7,3 +7,5 @@ export const getUserInfoApi = () => request<getUserAccountRes>('/user/account', 
 // 获取用户详情
 export const getUserDetailApi = (uid: number) =>
   request<getUserDetailRes>('/user/detail', 'get', { uid })
+
+

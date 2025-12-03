@@ -1,5 +1,5 @@
 import { request } from '@/utils/request'
-import { GetUserPlayListRes,GetPlayListDetailRes, GetMusicDetailRes } from '@/types/musicList'
+import { GetUserPlayListRes, GetPlayListDetailRes, GetMusicDetailRes, GetMusicUrlRes, GetLyricRes } from '@/types/musicList'
 
 // 获取用户歌单信息
 export const getUserPlayList = (uid: number) =>
@@ -17,3 +17,19 @@ export const getSongDetailApi = (ids: string) =>
 // 获取用户喜欢音乐列表
 export const getUserLikeListApi = (uid: number) =>
   request<{ checkPoint: number; code: number; ids: number[] }>('/likelist', 'get', { uid })
+
+// 获取音乐url
+export const getMusicUrlApi = (id: number) =>
+  request<GetMusicUrlRes>(`/song/url/v1?id=${id}&level=lossless`, 'get')
+
+// 获取歌词
+export const getLyricApi = (id: number) =>
+  request<GetLyricRes>(`/lyric/new`, 'get', { id })
+
+// 获取动态封面
+export const getDynamicCoverApi = (id: number) =>
+  request<{ data: {videoPlayUrl: string} }>(`/song/dynamic/cover`, 'get', { id })
+
+// 更新听歌记录
+export const scrobbleApi = (id: number, sourceid?: number) =>
+  request(`/scrobble`, 'get', { id, sourceid })

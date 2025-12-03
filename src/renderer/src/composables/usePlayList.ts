@@ -32,6 +32,7 @@ export function usePlayList() {
       musicStore.updateCurrentItem({ ...res.playlist, tracks: songs })
       playListState.playList = songs
       playListState.ids = songs.map((item) => item.id)
+      playListState.listInfo = res.playlist
     } finally {
       playListState.loading = false
     }

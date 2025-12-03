@@ -1,0 +1,23 @@
+
+import { ElectronAPI } from '@electron-toolkit/preload'
+
+type Channel = 'maximize' | 'unmaximize' | 'minimize' | 'restore' | 'close'
+
+declare global {
+  interface Window {
+    $audio: any
+    $login: any
+    electron: ElectronAPI
+  }
+
+  interface ImportMetaEnv {
+    VITE_URL: string
+  }
+}
+
+declare module '@electron-toolkit/preload' {
+  interface IpcRenderer {
+    send(channel: Channel, ...args: any[]): void
+  }
+}
+export {};

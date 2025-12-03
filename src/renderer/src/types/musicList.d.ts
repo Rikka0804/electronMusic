@@ -47,14 +47,20 @@ export interface GetPlayListDetailRes {
     subscribedCount: number // 收藏总数
   }
 }
-export type CurrentItem = Omit<GetPlayListDetailRes['playlist']>
+// 用户当前选中的歌单列表，会随着用户选中的菜单变化
+export type CurrentItem = GetPlayListDetailRes['playlist']
+
+// 用户当前正在播放音乐的列表
+export interface RuntimeList extends PlayList {
+  tracks: GetMusicDetailData[] | { id: number }
+}
 
 // 歌曲详情
-export interface GetMusicDetailData  {
+export interface GetMusicDetailData {
   al: {
     // 名称详情
     id: number
-    name: number
+    name: string
     pic: number
     picUrl: string
   }
@@ -71,6 +77,7 @@ export interface GetMusicDetailData  {
   pop: number
   album: string
   _duration?: string
+  _searchText?: string
 }
 
 export interface GetMusicDetailRes {
@@ -78,6 +85,51 @@ export interface GetMusicDetailRes {
   songs: GetMusicDetailData[]
 }
 
-export interface CurrentItem extends PlayList  {
-  tracks: GetMusicDetailData[] | { id: number }
+
+export type getMusicUrlData = {
+  size: number
+  url: string
 }
+// 获取音乐url响应体
+export interface GetMusicUrlRes {
+  code: number
+  data: getMusicUrlData[]
+}
+
+interface GetLyricRes {
+  code: number
+  klyric: {
+    // 卡拉歌词(逐字)
+    lyric: string // 可能会返回空串
+    version: number
+  }
+  lrc: {
+    // 逐行歌词
+    lyric: string // 可能会返回空串
+    version: number
+  }
+  yrc: {
+    // 网易云逐字歌词
+    lyric: string
+  } | null
+  tlyric: {
+    // 翻译逐行歌词
+    lyric: string // 可能会返回空串
+    version: number
+  } | null
+}
+
+export interface Lyric  { time: number | boolean; text: string; line?: number }
+export interface Yrc  {
+  time: number
+  duration: number
+  line?: number
+  yrc: Array<{
+    text: string
+    transition: number
+    cursor: number
+    width?: number | string
+  }>
+}
+
+

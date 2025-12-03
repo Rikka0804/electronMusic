@@ -6,16 +6,16 @@
     </div>
     <div class="list mt-[15px]">
       <div class="list-title ">
-        <div v-for="config in columns" v-show="!config.hidden" :key="config.title" class="title-item"
-          :class="config.class" :style="{ ...config.style, width: config.width }">
+        <div v-for="config in normalizedColumns" v-show="!config.hidden" :key="config.title" class="title-item"
+          :class="config.class" :style="config._style">
           {{ config.title }}
         </div>
       </div>
       <div class="list-container">
-        <div class="musciList-item" v-for="(value, index) in mylist" :key="value.id">
+        <div class="musciList-item" v-for="(value, index) in chunkList" :key="value.id"
+          @dblclick="playHandler(value, index)">
           <div class="item-container flex text-[14px] h-[70px] items-center justify-around">
-            <div v-for="config in columns" :key="config.type" :class="config.class"
-              :style="{ ...config.style, width: config.width }">
+            <div v-for="config in normalizedColumns" :key="config.type" :class="config.class" :style="config._style">
               <template v-if="config.type === 'index'">
                 {{ index + 1 }}
               </template>
@@ -57,29 +57,104 @@
 </template>
 
 <script setup lang="ts">
-import { ref ,computed} from 'vue'
+import { ref, computed, watch } from 'vue'
 import { formattingTime } from '@/utils/utils'
 import { type Columns } from '../musciList'
 import { GetMusicDetailData } from '@/types/musicList'
-import { useUserStore } from '@/store/modules/user'
+import { useUserStore } from '@/store'
+import { useMusicStore } from '@/store'
 interface props {
   columns: Columns[],
   list: GetMusicDetailData[]
-
-
 }
 const props = defineProps<props>()
-const mylist = ref<GetMusicDetailData[]>([])
-mylist.value = props.list.map(item => ({
-  ...item,
-  _duration: formattingTime(item.dt)
-}))
-
+interface Emits {
+  (e: 'play', item: GetMusicDetailData, index: number): void
+  (e: 'updateRuntimeList'): void
+}
+const emit = defineEmits<Emits>()
 const searchKey = ref('')
 const isFocus = ref(false)
 const userStore = useUserStore()
 const likeSet = computed(() => new Set(userStore.userLikeIds))
 const isLike = (data: GetMusicDetailData) => likeSet.value.has(data.id)
+const mylist = ref<GetMusicDetailData[]>([])
+mylist.value = props.list.map(item => ({
+  ...item,
+  _duration: formattingTime(item.dt),
+  _searchText: [
+    item.name?.toLowerCase() || '',
+    item.al?.name?.toLowerCase() || '',
+    ...(item.ar?.map(a => a.name?.toLowerCase() || '') || [])
+  ].join(' ') //预处理搜索关键词
+}))
+
+const chunkList = ref<GetMusicDetailData[]>([])
+const chunkSize = 20
+let rafId = 0
+const renderChunked = (fullList: GetMusicDetailData[]) => {
+  chunkList.value = []
+  let start = 0
+  cancelAnimationFrame(rafId)
+  function appendChunk() {
+    const next = fullList.slice(start, start + chunkSize)
+    if (!next.length) return
+    chunkList.value.push(...next)
+    start += chunkSize
+    rafId = requestAnimationFrame(appendChunk)
+  }
+  appendChunk()
+}
+watch(() => searchKey.value, (val) => {
+  const key = val.trim().toLowerCase()
+  renderChunked(
+    key ? mylist.value.filter(item => item._searchText?.includes(key)) : mylist.value
+  )
+}, { immediate: true })
+
+const normalizedColumns = ref(
+  props.columns.map(col => ({
+    ...col,
+    _style: { ...col.style, width: col.width }
+  }))
+)
+
+
+
+// const filterList = ref<GetMusicDetailData[]>([])
+// 搜索音乐
+// const handleSearch = (val) => {
+
+//   if (!val.trim().length) {
+//     filterList.value = mylist.value
+//   } else {
+//     filterList.value = mylist.value.filter((item) => {
+//       const alName = item.al?.name || ' '
+//       const keywords = [item.name?.toLowerCase(), alName.toLowerCase()]
+//       item.ar?.forEach((a) => {
+//         if (a.name) {
+//           keywords.push(a.name.toLowerCase())
+//         }
+//       })
+//       return keywords.some((keyword) => keyword.includes(val?.toLowerCase()))
+//     })
+//   }
+// }
+
+
+
+// 双击击播放音乐
+const musicStore = useMusicStore()
+const playHandler = (item: GetMusicDetailData, index: number) => {
+  // 当前音乐列表是当前播放的音乐
+  if (musicStore.currentItem?.id === musicStore.runtimeList?.id) { }
+  emit('play', item, index)
+  // 播放列表不是当前播放的音乐更新播放列表
+  if (musicStore.runtimeList?.id !== musicStore.currentItem?.id) {
+    emit('updateRuntimeList')
+  }
+
+}
 
 
 </script>
@@ -88,6 +163,7 @@ const isLike = (data: GetMusicDetailData) => likeSet.value.has(data.id)
 ::v-deep(.iconfont.icon-xihuan1) {
   color: #ff6600;
 }
+
 .search {
   display: flex;
   justify-content: flex-start;
@@ -114,10 +190,11 @@ const isLike = (data: GetMusicDetailData) => likeSet.value.has(data.id)
     }
   }
 }
-.list{
-.empty{
-  margin-left: 20px;
-}
+
+.list {
+  .empty {
+    margin-left: 20px;
+  }
 }
 
 .list-title {
@@ -152,6 +229,7 @@ const isLike = (data: GetMusicDetailData) => likeSet.value.has(data.id)
 
       .title-box {
         width: 90%;
+
         .title-img {
           border-radius: 10px;
         }

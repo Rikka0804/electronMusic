@@ -33,7 +33,7 @@ export default defineConfig({
     server: {
       proxy: {
         '/api': {
-          target: 'https://musicapi.rikka0804.top',
+          target: 'https://newmusicapi.rikka0804.top',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '')
         }

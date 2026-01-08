@@ -10,6 +10,9 @@ declare module 'vue' {
   export interface GlobalComponents {
     Card: typeof import('./src/components/Card/index.vue')['default']
     ContextMenu: typeof import('./src/components/ContextMenu/index.vue')['default']
+    DetailLeft: typeof import('./src/components/MusicPlayer/DetailLeft.vue')['default']
+    DetailRight: typeof import('./src/components/MusicPlayer/DetailRight.vue')['default']
+    DetaulCenter: typeof import('./src/components/MusicPlayer/DetaulCenter.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElDialog: typeof import('element-plus/es')['ElDialog']
@@ -21,12 +24,14 @@ declare module 'vue' {
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
     List: typeof import('./src/components/SearchCom/list.vue')['default']
+    MusicPlayer: typeof import('./src/components/MusicPlayer/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Search: typeof import('./src/components/Search/index.vue')['default']
     SearchCom: typeof import('./src/components/SearchCom/index.vue')['default']
     SvgIcon: typeof import('./src/components/SvgIcon/index.vue')['default']
     Tabs: typeof import('./src/components/Tabs/index.vue')['default']
+    Volume: typeof import('./src/components/MusicPlayer/Volume.vue')['default']
   }
   export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']

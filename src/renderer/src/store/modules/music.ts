@@ -16,7 +16,10 @@ export const useMusicStore = defineStore('my-music', () => {
   }
   // 用户当前正在播放音乐的列表状态
   // 0心动 1列表循环 2随机播放 3单曲循环
-  const orderStatusVal = ref<0 | 1 | 2 | 3>(0)
+  const orderStatusVal = ref<0 | 1 | 2 | 3>(1)
+
+  // 当前播放歌曲的时间
+  const currentTime = ref<number>(0)
 
   // 用户当前正在播放音乐的列表
   const runtimeList = ref<RuntimeList | null>(null)
@@ -25,6 +28,12 @@ export const useMusicStore = defineStore('my-music', () => {
   const updateRuntimeList = (val: RuntimeList, ids: number[]) => {
     runtimeList.value = val
     runtimeIds.value = ids
+  }
+  const updateTracks = (tracks: GetMusicDetailData[], ids: number[]) => {
+    if (runtimeList.value) {
+      runtimeList.value.tracks = tracks
+      runtimeIds.value = ids
+    }
   }
   const clearRuntimeList = () => {
     runtimeList.value = null
@@ -83,7 +92,16 @@ export const useMusicStore = defineStore('my-music', () => {
     runtimeIds,
     clearRuntimeList,
     updateRuntimeList,
-    getMusicUrlHandler
+    getMusicUrlHandler,
+    songs,
+    musicUrl,
+    lrcMode,
+    lrc,
+    yrc,
+    videoPlayUrl,
+    orderStatusVal,
+    updateTracks,
+    currentTime
   }
 
-})
+},{persist: true})

@@ -1,7 +1,8 @@
 import axios, { Method } from 'axios'
 
 const instance = axios.create({
-  baseURL: '/api'
+  baseURL: 'https://newmusicapi.rikka0804.top',
+  timeout: 30000,
 })
 
 instance.interceptors.request.use(

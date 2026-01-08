@@ -105,6 +105,7 @@ const renderChunked = (fullList: GetMusicDetailData[]) => {
   }
   appendChunk()
 }
+
 watch(() => searchKey.value, (val) => {
   const key = val.trim().toLowerCase()
   renderChunked(
@@ -118,30 +119,6 @@ const normalizedColumns = ref(
     _style: { ...col.style, width: col.width }
   }))
 )
-
-
-
-// const filterList = ref<GetMusicDetailData[]>([])
-// 搜索音乐
-// const handleSearch = (val) => {
-
-//   if (!val.trim().length) {
-//     filterList.value = mylist.value
-//   } else {
-//     filterList.value = mylist.value.filter((item) => {
-//       const alName = item.al?.name || ' '
-//       const keywords = [item.name?.toLowerCase(), alName.toLowerCase()]
-//       item.ar?.forEach((a) => {
-//         if (a.name) {
-//           keywords.push(a.name.toLowerCase())
-//         }
-//       })
-//       return keywords.some((keyword) => keyword.includes(val?.toLowerCase()))
-//     })
-//   }
-// }
-
-
 
 // 双击击播放音乐
 const musicStore = useMusicStore()

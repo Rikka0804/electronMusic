@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <ListInfo :loading="playListState.loading"/>
-    <MusicList v-if="!playListState.loading" :columns="columns" :list="playListState.playList" @play="musicStore.getMusicUrlHandler"  @updateRuntimeList="musicStore.updateRuntimeList({tracks: playListState.playList,...playListState.listInfo}, playListState.ids)"/>
+    <MusicList v-if="!playListState.loading" :columns="columns" :list="playListState.playList" @play="musicStore.getMusicUrlHandler"  @updateRuntimeList="handleUpdateRuntimeList"/>
   </div>
 </template>
 
@@ -21,6 +21,11 @@ getPlayListDetail(id)
 
 import { useMusicStore } from '@/store'
 const musicStore = useMusicStore()
+
+const handleUpdateRuntimeList = () => {
+  musicStore.updateRuntimeList({tracks: playListState.playList,...playListState.listInfo}, playListState.ids);
+  musicStore.orderStatusVal = 1
+}
 
 
 

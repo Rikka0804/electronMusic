@@ -18,7 +18,10 @@
   </div>
   <BaseButtom :class="[playerShow ? 'bottom-show' : 'bottom-visible']">
     <template #default>
-      <el-button type="primary">播放/暂停</el-button>
+      <MusicPlayer
+        :src="musicStore.musicUrl"
+        :songs="musicStore.songs"
+      />
     </template>
   </BaseButtom>
 
@@ -26,12 +29,14 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, computed } from 'vue'
-import { useUserStore } from '@/store';
+import { useUserStore , useMusicStore} from '@/store';
 import { getUserInfoApi, getUserDetailApi } from '@/api/user'
 import BaseAside from './components/BaseAside.vue'
 import BaseHeader from './components/BaseHeader.vue';
 import BaseButtom from './components/BaseButtom.vue';
+import MusicPlayer from '@/components/MusicPlayer/index.vue';
 
+const musicStore = useMusicStore()
 const refresh = ref(0) // 登录完成后强制刷新组件
 onMounted(async () => {
   await getUserInfo()
@@ -42,10 +47,9 @@ const getUserInfo = async () => {
   res.profile.level = level
   res.profile.createDays = createDays
   refresh.value++
-
   useUserStore().setUser(res)
 }
-const playerShow = ref(false)
+const playerShow = ref(true)
 
 
 </script>

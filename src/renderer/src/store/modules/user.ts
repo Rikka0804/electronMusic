@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type {getUserAccountRes} from '@/types/user'
+import type { getUserAccountRes } from '@/types/user'
 
 export const useUserStore = defineStore(
   'my-user',
@@ -16,12 +16,19 @@ export const useUserStore = defineStore(
       userInfo.value = val
     }
 
+    // 喜欢的音乐id
     const userLikeIds = ref<number[]>([])
     const setUserLikeIds = (val: number[]) => {
       userLikeIds.value = val
     }
 
-    return { userInfo, setUser, cookie, setCookie , isLogin ,userLikeIds,setUserLikeIds}
+    //当前播放器的音量
+    const volume = ref<number>(
+      Number(localStorage.getItem('volume') ?? 50)
+    )
+
+
+    return { userInfo, setUser, cookie, setCookie, isLogin, userLikeIds, setUserLikeIds ,volume }
   },
   {
     persist: true

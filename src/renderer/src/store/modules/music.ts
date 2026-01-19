@@ -49,6 +49,7 @@ export const useMusicStore = defineStore('my-music', () => {
     getLyric(val.id)
     getDynamicCover(val.id)
     scrobble(val.id, runtimeList.value?.id)
+
     const { data } = await getMusicUrlApi(val.id)
     musicUrl.value = data[0].url || ''
   }

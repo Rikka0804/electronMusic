@@ -18,10 +18,7 @@
   </div>
   <BaseButtom :class="[playerShow ? 'bottom-show' : 'bottom-visible']">
     <template #default>
-      <MusicPlayer
-        :src="musicStore.musicUrl"
-        :songs="musicStore.songs"
-      />
+      <MusicPlayer ref="audioInstance" :src="musicStore.musicUrl" :songs="musicStore.songs" />
     </template>
   </BaseButtom>
 
@@ -29,21 +26,33 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, computed } from 'vue'
-import { useUserStore , useMusicStore} from '@/store';
+import { useUserStore, useMusicStore } from '@/store';
 import { getUserInfoApi, getUserDetailApi } from '@/api/user'
 import BaseAside from './components/BaseAside.vue'
 import BaseHeader from './components/BaseHeader.vue';
 import BaseButtom from './components/BaseButtom.vue';
-import MusicPlayer from '@/components/MusicPlayer/index.vue';
+import MusicPlayer, { MusicPlayerInstanceType } from '@/components/MusicPlayer/index.vue'
+import { usePlayList } from '@/composables/usePlayList';
+
+// 音乐播放器实例
+const audioInstance = ref<MusicPlayerInstanceType>()
 
 const musicStore = useMusicStore()
 const refresh = ref(0) // 登录完成后强制刷新组件
 onMounted(async () => {
+  if (audioInstance.value !== undefined) {
+    window.$audio = audioInstance.value!
+    console.log('初始化全局$audio：', window.$audio)
+  }
   await getUserInfo()
 })
+const { getUserLikeList } = usePlayList()
 const getUserInfo = async () => {
+
+
   const res = await getUserInfoApi()
   const { level, createDays } = await getUserDetailApi(res.account.id)
+  await getUserLikeList()
   res.profile.level = level
   res.profile.createDays = createDays
   refresh.value++

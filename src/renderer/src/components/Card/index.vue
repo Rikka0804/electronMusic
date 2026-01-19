@@ -23,14 +23,15 @@
 
 <script lang="ts" setup>
 import { formatNumberToMillion } from '@/utils/utils'
-interface props {
-  picUrl: string,
-  name: string,
+interface Props {
+  picUrl: string
+  name: string
   trackCount?: number
   playCount?: number
-
 }
-const props = defineProps<props>()
+
+const props = defineProps<Props>()
+
 
 
 </script>

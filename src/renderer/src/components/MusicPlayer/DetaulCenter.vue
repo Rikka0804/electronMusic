@@ -6,8 +6,8 @@
         <use :xlink:href="'#' + props.orderStatus[orderStatusVal]"></use>
       </svg>
       <i class="iconfont cut icon-shangyishou"></i>
-      <i v-show="isPlay" class="iconfont operation icon-Pause"></i>
-      <i v-show="!isPlay" class="iconfont operation icon-kaishi1"></i>
+      <i v-show="isPlay" @click="emit('pause')" class="iconfont operation icon-Pause"></i>
+      <i v-show="!isPlay" @click="emit('play')" class="iconfont operation icon-kaishi1"></i>
       <i class="iconfont cut icon-xiayishou"></i>
     </div>
   </div>
@@ -26,6 +26,8 @@ interface Props {
 const props = defineProps<Props>()
 interface Emits {
   (e: 'setOrderHandler'): void
+  (e: 'play'): void
+  (e: 'pause'): void
 }
 const emit = defineEmits<Emits>()
 

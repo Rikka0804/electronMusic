@@ -1,11 +1,11 @@
-
+import { MusicPlayerInstanceType } from '@/components/MusicPlayer/index.vue'
 import { ElectronAPI } from '@electron-toolkit/preload'
 
 type Channel = 'maximize' | 'unmaximize' | 'minimize' | 'restore' | 'close'
 
 declare global {
   interface Window {
-    $audio: any
+    $audio: MusicPlayerInstanceType
     $login: any
     electron: ElectronAPI
   }

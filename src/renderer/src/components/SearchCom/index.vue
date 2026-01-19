@@ -39,7 +39,7 @@ const getDefaultSearch = async () => {
   placeholderInfo.value.showKeyword = data.showKeyword
   setTimeout(() => {
     getDefaultSearch()
-  }, 10000)
+  }, 15000)
 }
 getDefaultSearch()
 

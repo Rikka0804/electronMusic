@@ -21,6 +21,8 @@ export const useMusicStore = defineStore('my-music', () => {
   // 当前播放歌曲的时间
   const currentTime = ref<number>(0)
 
+
+
   // 用户当前正在播放音乐的列表
   const runtimeList = ref<RuntimeList | null>(null)
   // 用户当前正在播放音乐的列表ids
@@ -49,9 +51,13 @@ export const useMusicStore = defineStore('my-music', () => {
     getLyric(val.id)
     getDynamicCover(val.id)
     scrobble(val.id, runtimeList.value?.id)
-
+    currentTime.value = 0
     const { data } = await getMusicUrlApi(val.id)
     musicUrl.value = data[0].url || ''
+    window.$audio.el.oncanplay = () => {
+      window.$audio.el.play()
+    }
+
   }
   // 获取歌词
   const lrcMode = ref<0 | 1>(0) // 0 逐行 1 逐字
@@ -102,7 +108,7 @@ export const useMusicStore = defineStore('my-music', () => {
     videoPlayUrl,
     orderStatusVal,
     updateTracks,
-    currentTime
+    currentTime,
   }
 
 },{persist: true})

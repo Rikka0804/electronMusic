@@ -7,7 +7,7 @@
     <DetailRight :currentTime="musicStore.currentTime" :songs="props.songs" :audio="audio" />
   </div>
   <div class="plan-container absolute w-full flex items-center h-[15px] top-[-8.5px]">
-    <ProgressBar />
+    <ProgressBar :songs="props.songs" />
   </div>
 
 </template>
@@ -37,8 +37,6 @@ export interface MusicPlayerInstanceType {
   pause: typeof pause
   play: typeof play
   time: number
-
-
 }
 
 interface Props {
@@ -64,6 +62,8 @@ onMounted(() => {
 const userStore = useUserStore()
 const musicStore = useMusicStore()
 const play = (lengthen: boolean = false) => {
+
+
   originPlay.call(audio.value).catch((err) => {
     console.error('调用origin.play方法时抛出了错误：', err)
   })
@@ -83,9 +83,7 @@ const timeState = reactive({
 })
 
 const timeupdate = () => {
-  if (timeState.stop || isNaN(window.$audio.el.duration)) {
-    return
-  }
+  if (timeState.stop || isNaN(window.$audio.el.duration)) { return }
   // 在更新 currentTime 之前，保存旧的值
   timeState.previousTime = musicStore.currentTime
   musicStore.currentTime = window.$audio.time
@@ -154,6 +152,5 @@ defineExpose(exposeObj)
   backdrop-filter: blur(60px) saturate(210%);
 }
 
-.plan-container {
-}
+.plan-container {}
 </style>

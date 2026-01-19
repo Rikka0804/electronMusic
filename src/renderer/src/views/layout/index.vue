@@ -16,7 +16,7 @@
       </div>
     </div>
   </div>
-  <BaseButtom :class="[playerShow ? 'bottom-show' : 'bottom-visible']">
+  <BaseButtom :class="[musicStore.musicUrl.length ? 'bottom-show' : 'bottom-visible']">
     <template #default>
       <MusicPlayer ref="audioInstance" :src="musicStore.musicUrl" :songs="musicStore.songs" />
     </template>
@@ -58,7 +58,7 @@ const getUserInfo = async () => {
   refresh.value++
   useUserStore().setUser(res)
 }
-const playerShow = ref(true)
+
 
 
 </script>

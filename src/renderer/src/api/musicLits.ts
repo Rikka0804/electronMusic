@@ -1,5 +1,5 @@
 import { request } from '@/utils/request'
-import { GetUserPlayListRes, GetPlayListDetailRes, GetMusicDetailRes, GetMusicUrlRes, GetLyricRes } from '@/types/musicList'
+import { GetUserPlayListRes, GetPlayListDetailRes, GetMusicDetailRes, GetMusicUrlRes, GetLyricRes ,GetIntelliganceListRes} from '@/types/musicList'
 
 // 获取用户歌单信息
 export const getUserPlayList = (uid: number) =>
@@ -33,3 +33,7 @@ export const getDynamicCoverApi = (id: number) =>
 // 更新听歌记录
 export const scrobbleApi = (id: number, sourceid?: number) =>
   request(`/scrobble`, 'get', { id, sourceid })
+
+// 获取智能推荐列表
+export const getIntelligenceListApi = (pid: number, id: number, sid: number) =>
+  request<GetIntelliganceListRes>('/playmode/intelligence/list', 'get', { pid, id, sid })

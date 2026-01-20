@@ -63,11 +63,11 @@ import { type Columns } from '../musciList'
 import { GetMusicDetailData } from '@/types/musicList'
 import { useUserStore } from '@/store'
 import { useMusicStore } from '@/store'
-interface props {
+interface Props {
   columns: Columns[],
   list: GetMusicDetailData[]
 }
-const props = defineProps<props>()
+const props = defineProps<Props>()
 interface Emits {
   (e: 'play', item: GetMusicDetailData, index: number): void
   (e: 'updateRuntimeList'): void

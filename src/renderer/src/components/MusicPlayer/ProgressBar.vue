@@ -1,40 +1,69 @@
 <template>
   <div class="base-progress-bar w-full" v-if="props.songs?.ar">
-    <el-slider v-model="model" :show-tooltip="false" />
-
+    <el-slider
+      :class="{ 'is-dragging': isSeeking }"
+      v-model="slider"
+      :show-tooltip="false"
+      @mousedown="onStart"
+      @mouseup="onEnd"
+      @change="onEnd"
+    />
   </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { GetMusicDetailData } from '@/types/musicList'
 import { useMusicStore } from '@/store'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 interface Props {
   songs?: GetMusicDetailData
 }
-
 const props = defineProps<Props>()
 const musicStore = useMusicStore()
-const dt = computed<number>(() => {
-  const val = musicStore.songs?.dt ?? 0
-  return Number((val / 1000).toFixed(2))
+
+/** 是否正在拖动 */
+const isSeeking = ref(false)
+/** 拖动时的临时时间 */
+const tempTime = ref(0)
+
+/** 歌曲总时长（秒） */
+const duration = computed(() => {
+  return (musicStore.songs?.dt ?? 0) / 1000
 })
 
-const model = computed<number>({
+/** slider 百分比 */
+const slider = computed<number>({
   get() {
-    return (musicStore.currentTime / dt.value) * 100
+    const time = isSeeking.value
+      ? tempTime.value
+      : musicStore.currentTime
+
+    return duration.value
+      ? (time / duration.value) * 100
+      : 0
   },
   set(val) {
-    window.$audio.time = (val * window.$audio?.el.duration) / 100
+    const time = (val * duration.value) / 100
+    tempTime.value = time
   }
 })
 
+const onStart = () => {
+  isSeeking.value = true
+  tempTime.value = musicStore.currentTime
+}
 
+const onEnd = () => {
+  if (!isSeeking.value) return
+  isSeeking.value = false
 
-
-
+  // ⭐ 松手才真正设置 audio
+  window.$audio.time = tempTime.value
+  musicStore.currentTime = tempTime.value
+}
 </script>
+
 
 <style scoped lang="scss">
 .base-progress-bar {}
@@ -46,7 +75,8 @@ const model = computed<number>({
 :deep(.el-slider__button) {
   display: none;
 }
-:deep(.el-slider:hover) {
+:deep(.el-slider:hover),
+:deep(.el-slider.is-dragging) {
   .el-slider__runway {
     height: 5px;
   }

@@ -132,4 +132,16 @@ export interface Yrc  {
   }>
 }
 
+// 获取智能推荐列表响应体
+interface GetIntelliganceListRes {
+  code: number
+  message: string
+  data: {
+    id: number // 根对象ID
+    alg: string // 算法
+    recommended: boolean // 这个字段表示如果为false则表示当前歌曲是“已喜欢”列表里的，false则反之
+    songInfo: GetMusicDetailData | null // 歌曲信息
+  }[]
+}
+
 

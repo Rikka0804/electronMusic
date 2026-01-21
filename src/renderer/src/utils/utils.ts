@@ -67,3 +67,11 @@ export function formattingTime(msec: number, isMsec = true) {
 
   return result
 }
+
+// 随机产生指定范围数
+export function randomNum(minNum: number, maxNum: number, decimals = false) {
+  if (decimals) {
+    return Math.random() * (maxNum - minNum) + minNum
+  }
+  return Math.floor(Math.random() * (maxNum - minNum + 1) + minNum)
+}

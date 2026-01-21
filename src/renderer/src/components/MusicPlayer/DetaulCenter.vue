@@ -5,17 +5,16 @@
         :class="['icon', 'iconfont', props.orderStatus[orderStatusVal]]" aria-hidden="true">
         <use :xlink:href="'#' + props.orderStatus[orderStatusVal]"></use>
       </svg>
-      <i class="iconfont cut icon-shangyishou"></i>
+      <i class="iconfont cut icon-shangyishou" @click="emit('cutSong', false)"></i>
       <i v-show="isPlay" @click="emit('pause')" class="iconfont operation icon-Pause"></i>
       <i v-show="!isPlay" @click="emit('play')" class="iconfont operation icon-kaishi1"></i>
-      <i class="iconfont cut icon-xiayishou"></i>
+      <i class="iconfont cut icon-xiayishou" @click="emit('cutSong', true)"></i>
     </div>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 
 interface Props {
   orderStatus: string[],
@@ -28,6 +27,7 @@ interface Emits {
   (e: 'setOrderHandler'): void
   (e: 'play'): void
   (e: 'pause'): void
+  (e:'cutSong', type: boolean): void
 }
 const emit = defineEmits<Emits>()
 

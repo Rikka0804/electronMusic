@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
-import { ref ,nextTick} from 'vue'
+import { ref, nextTick ,watch} from 'vue'
 import { GetMusicDetailData, CurrentItem, RuntimeList, Lyric, Yrc } from '@/types/musicList'
-import { getLyricApi, getDynamicCoverApi, scrobbleApi, getMusicUrlApi, getIntelligenceListApi } from '@/api/musicLits'
+import { getLyricApi, getDynamicCoverApi, getMusicUrlApi, getIntelligenceListApi } from '@/api/musicLits'
 import { parseLrc, parseYrc } from '@lrc-player/parse'
+import { randomNum } from '@/utils/utils'
 
 export const useMusicStore = defineStore('my-music', () => {
   // 用户当前选中的歌单列表，会随着用户选中的菜单变化
@@ -49,14 +50,44 @@ export const useMusicStore = defineStore('my-music', () => {
   const songs = ref<GetMusicDetailData>()
 
   const musicUrl = ref<string>('')
+  // 当前用户正在播放的音乐索引
+  const currentIndex = ref<number>(0)
+
+
+  // 上一首歌曲索引列表 只记录随机播放
+  const lastIndexList = ref<number[]>([])
+
+  // 监听当前索引变化 记录随机播放的上一首歌曲索引
+  watch(
+  () => currentIndex.value,
+  (value, oldValue) => {
+    if (orderStatusVal.value !== 2) return
+    if (oldValue === undefined) return
+
+    lastIndexList.value.push(oldValue)
+    // 只记录10条
+    if (lastIndexList.value.length > 10) {
+      lastIndexList.value.shift()
+    }
+  }
+)
+// 切回随机播放清除上一首歌曲索引列表
+watch(
+  () => orderStatusVal.value,
+  (mode, oldMode) => {
+    if (mode === 2 && oldMode !== 2) {
+      lastIndexList.value = []
+    }
+  }
+)
   // 获取音乐url并播放
-  const getMusicUrlHandler = async (val: GetMusicDetailData, i: number) => {
+  const getMusicUrlHandler = async (val: GetMusicDetailData, i?: number) => {
     window.$audio.reset()
     songs.value = val
     getLyric(val.id)
     getDynamicCover(val.id)
-    scrobble(val.id, runtimeList.value?.id)
-
+    // 更新当前索引
+    currentIndex.value = i || currentIndex.value
     const { data } = await getMusicUrlApi(val.id)
     musicUrl.value = data[0].url.split('?')[0] || ''
     nextTick(() => {
@@ -67,10 +98,6 @@ export const useMusicStore = defineStore('my-music', () => {
         el.play()
       }
     })
-
-    if (runtimeList.value?.specialType === 5 && orderStatusVal.value === 0) {
-      getintelligenceList()
-    }
   }
   // 获取心动歌曲列表  只支持我喜欢的列表 pid: 歌单id   id: 歌曲id
   const getintelligenceList = async () => {
@@ -92,6 +119,57 @@ export const useMusicStore = defineStore('my-music', () => {
     ids.unshift(songs.value.id)
     updateTracks(tracks, ids)
 
+  }
+
+  // 0心动 1列表循环 2随机播放 3单曲循环
+  const orderTarget = (i: 0 | 1 | 2 | 3) => {
+    if (i === 0) {
+      return (currentIndex.value + 1) % runtimeIds.value.length
+    } else if (i === 1) {
+      return (currentIndex.value + 1) % runtimeIds.value.length
+    } else if (i === 2) {
+      return randomNum(0, runtimeIds.value.length - 1)
+    } else {
+      return currentIndex.value
+    }
+  }
+
+  const playEnd = () => {
+    currentIndex.value = orderTarget(orderStatusVal.value!)
+    if (currentIndex.value > runtimeIds.value.length - 1) {
+      return
+    }
+    getMusicUrlHandler(runtimeList.value!.tracks[currentIndex.value])
+  }
+  // 切换歌曲
+  const cutSongHandler = (target: boolean) => {
+    if ([0, 1, 3].includes(orderStatusVal.value!)) {
+      currentIndex.value = target ? currentIndex.value + 1 : currentIndex.value - 1
+      if (currentIndex.value > runtimeIds.value.length - 1) {
+        currentIndex.value = 0
+      } else if (currentIndex.value < 0) {
+        currentIndex.value = runtimeIds.value.length - 1
+      }
+      getMusicUrlHandler(runtimeList.value!.tracks[currentIndex.value])
+      return
+    }
+    if (!target) {
+      const i =
+        lastIndexList.value[lastIndexList.value.length - 1] || orderTarget(orderStatusVal.value)
+      getMusicUrlHandler(runtimeList.value!.tracks[i])
+      lastIndexList.value.splice(runtimeIds.value!.length - 1)
+      return
+    }
+    playEnd()
+  }
+  // 初始化播放
+  const initPlay = async (val?:number) => {
+    // 切换到心动模式时，重置索引为0
+    if (val === 0) {
+    return  currentIndex.value = 0
+    }
+    // 心动切其他时，重头播放该歌单
+    await getMusicUrlHandler(runtimeList.value!.tracks[0],0)
   }
   // 获取歌词
   const lrcMode = ref<0 | 1>(0) // 0 逐行 1 逐字
@@ -120,10 +198,7 @@ export const useMusicStore = defineStore('my-music', () => {
       videoPlayUrl.value = ''
     }
   }
-  // 更新听歌记录
-  const scrobble = async (id: number, sourceid?: number) => {
-    await scrobbleApi(id, sourceid)
-  }
+
 
   return {
     currentItem,
@@ -143,7 +218,10 @@ export const useMusicStore = defineStore('my-music', () => {
     orderStatusVal,
     updateTracks,
     currentTime,
-    getintelligenceList
+    getintelligenceList,
+    initPlay,
+    playEnd,
+    cutSongHandler,
   }
 
 }, { persist: true })

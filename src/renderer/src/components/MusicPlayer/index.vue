@@ -3,7 +3,7 @@
     <audio :src="props.src" ref="audio" class="plyr-audio" preload="auto" @timeupdate="timeupdate" @ended="end" />
     <DetailLeft :songs="props.songs" />
     <DetaulCenter :orderStatus="orderStatus" :orderStatusVal="musicStore.orderStatusVal" :isPlay="isPlay" @pause="pause"
-      @play="play" @setOrderHandler="setOrderHandler" />
+      @play="play" @setOrderHandler="setOrderHandler" @cutSong="musicStore.cutSongHandler($event)" />
     <DetailRight :currentTime="musicStore.currentTime" :songs="props.songs" :audio="audio" />
   </div>
   <div class="plan-container absolute w-full flex items-center h-[15px] top-[-8.5px]">
@@ -22,8 +22,6 @@ import { useMusicStore, useUserStore } from '@/store'
 import { usePlayList } from '@/composables/usePlayList';
 import { ref, UnwrapRef, onMounted, reactive } from 'vue'
 
-
-
 // 重写auido的暂停和播放
 export type userAudio = {
   play: (lengthen?: boolean) => void;
@@ -39,6 +37,7 @@ export interface MusicPlayerInstanceType {
   time: number
   reset: typeof reset
   end: typeof end
+  togglePlay: typeof togglePlay
 }
 
 interface Props {
@@ -80,15 +79,22 @@ const pause = (isNeed: boolean = true, lengthen: boolean = false) => {
 const reset = () => {
   musicStore.currentTime = 0
   isPlay.value = false
-
   // 这里需要停止timeupdate的事件监视，因为在暂停音乐时会过渡结束（就相当于还是在播放一段时间），
   //  这样会导致进度条进度重置不及时
   timeState.stop = true // 在每次play方法时都会重置stop值
 }
 
 const end = () => {
-  console.log('end');
+  musicStore.playEnd()
 
+}
+// 切换暂停或者播放
+const togglePlay = () => {
+  if (isPlay.value) {
+    pause()
+  } else {
+    play()
+  }
 }
 
 
@@ -139,11 +145,14 @@ const setOrderHandler = async () => {
       playListState.playList,
       playListState.playList.map((item) => item.id)
     )
+    await musicStore.initPlay()
   }
   // 切换到心动模式时，获取心动歌曲列表
   if (runtimeList?.specialType === 5 && newValue === 0) {
     await musicStore.getintelligenceList()
+    await musicStore.initPlay(0)
   }
+
   // 如果不是我喜欢的歌单则心动不可用
   musicStore.orderStatusVal =
     newValue === 0 && runtimeList?.specialType !== 5 ?
@@ -158,6 +167,7 @@ const exposeObj = {
   pause,
   reset,
   end,
+  togglePlay,
 
 }
 Object.defineProperty(exposeObj, 'time', {

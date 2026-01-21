@@ -13,8 +13,9 @@
       </div>
       <div class="list-container">
         <div class="musciList-item" v-for="(value, index) in chunkList" :key="value.id"
-          @dblclick="playHandler(value, index)">
-          <div class="item-container flex text-[14px] h-[70px] items-center justify-around">
+          @dblclick="playHandler(value, index)" @click="currentId = value.id">
+          <div class="item-container flex text-[14px] h-[70px] items-center justify-around"
+            :class="{ 'active': currentId === value.id }">
             <div v-for="config in normalizedColumns" :key="config.type" :class="config.class" :style="config._style">
               <template v-if="config.type === 'index'">
                 {{ index + 1 }}
@@ -119,12 +120,16 @@ const normalizedColumns = ref(
     _style: { ...col.style, width: col.width }
   }))
 )
-
+const currentId = ref<number>(0)
 // 双击击播放音乐
 const musicStore = useMusicStore()
 const playHandler = (item: GetMusicDetailData, index: number) => {
   // 当前音乐列表是当前播放的音乐
-  if (musicStore.currentItem?.id === musicStore.runtimeList?.id) { }
+  if (musicStore.currentItem?.id === musicStore.runtimeList?.id) {
+    if (musicStore.songs?.id === item.id) {
+    return  window.$audio.togglePlay()
+    }
+  }
   emit('play', item, index)
   // 播放列表不是当前播放的音乐更新播放列表
   if (musicStore.runtimeList?.id !== musicStore.currentItem?.id) {
@@ -192,9 +197,12 @@ const playHandler = (item: GetMusicDetailData, index: number) => {
 
 .list-container {
   .musciList-item {
+
+
     .item-container {
       color: $darkText;
       border-radius: 10px;
+
 
       &.active {
         background-color: rgba(255, 255, 255, 0.05);

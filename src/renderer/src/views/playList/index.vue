@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <ListInfo :loading="playListState.loading"/>
-    <MusicList v-if="!playListState.loading" :columns="columns" :list="playListState.playList" @play="musicStore.getMusicUrlHandler"  @updateRuntimeList="handleUpdateRuntimeList"/>
+    <MusicList v-if="!playListState.loading" :columns="columns" :list="playListState.playList" @play="handlePlay"  @updateRuntimeList="handleUpdateRuntimeList"/>
   </div>
 </template>
 
@@ -27,6 +27,20 @@ const handleUpdateRuntimeList = () => {
   musicStore.orderStatusVal = 1
 }
 
+// 播放歌曲
+const handlePlay = async (item , index) => {
+  const type = musicStore.orderStatusVal
+  // 非心动模式
+  if(type !== 0) {
+    return await musicStore.getMusicUrlHandler(item,index)
+  }
+  else{
+    // 心动模式 将当前歌曲作为第一首，点击重新获取新的心动歌曲列表
+   await musicStore.getMusicUrlHandler(item,0)
+   await musicStore.getintelligenceList()
+  }
+
+}
 
 
 

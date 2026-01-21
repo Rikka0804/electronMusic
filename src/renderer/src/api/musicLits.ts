@@ -30,10 +30,6 @@ export const getLyricApi = (id: number) =>
 export const getDynamicCoverApi = (id: number) =>
   request<{ data: {videoPlayUrl: string} }>(`/song/dynamic/cover`, 'get', { id })
 
-// 更新听歌记录
-export const scrobbleApi = (id: number, sourceid?: number) =>
-  request(`/scrobble`, 'get', { id, sourceid })
-
 // 获取智能推荐列表
 export const getIntelligenceListApi = (pid: number, id: number, sid: number) =>
   request<GetIntelliganceListRes>('/playmode/intelligence/list', 'get', { pid, id, sid })

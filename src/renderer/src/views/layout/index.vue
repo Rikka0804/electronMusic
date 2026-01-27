@@ -1,6 +1,7 @@
 <template>
   <div id="opacity-bg" style="position: fixed; width: 100%; height: 100%; transition: 0.5s"></div>
   <div id="opacity-bg1" style="position: fixed; width: 100%; height: 100%; transition: 0.5s"></div>
+  <MusicDrawer />
   <div class="layout relative h-full">
     <div class="box">
       <BaseAside></BaseAside>
@@ -33,6 +34,7 @@ import BaseHeader from './components/BaseHeader.vue';
 import BaseButtom from './components/BaseButtom.vue';
 import MusicPlayer, { MusicPlayerInstanceType } from '@/components/MusicPlayer/index.vue'
 import { usePlayList } from '@/composables/usePlayList';
+import MusicDrawer from './components/MusicDrawer.vue'
 
 // 音乐播放器实例
 const audioInstance = ref<MusicPlayerInstanceType>()

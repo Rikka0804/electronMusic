@@ -24,6 +24,7 @@ export const columns: Columns[] = [
     class: 'empty',
     style: {
       position: 'relative',
+      textAlign: 'center',
 
     }
   },

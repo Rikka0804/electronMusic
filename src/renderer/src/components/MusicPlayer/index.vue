@@ -24,8 +24,8 @@ import { ref, UnwrapRef, onMounted, reactive } from 'vue'
 
 // 重写auido的暂停和播放
 export type userAudio = {
-  play: (lengthen?: boolean) => void;
-  pause: (isNeed?: boolean, lengthen?: boolean) => void;
+  play: () => void;
+  pause: (isNeed?: boolean) => void;
 } & Omit<HTMLAudioElement, 'pause' | 'play'>
 
 // 自定义播放器的类型
@@ -62,19 +62,64 @@ onMounted(() => {
 })
 const userStore = useUserStore()
 const musicStore = useMusicStore()
-const play = (lengthen: boolean = false) => {
-
+const play = () => {
+  let volume = userStore.volume
+  audio.value!.volume = 0
 
   originPlay.call(audio.value).catch((err) => {
     console.error('调用origin.play方法时抛出了错误：', err)
   })
   timeState.stop = false
   isPlay.value = true
+  return transitionVolume(volume, true).then(() => { })
+
 }
-const pause = (isNeed: boolean = true, lengthen: boolean = false) => {
-  originPause.call(audio.value)
-  isPlay.value = false
+const pause = (isNeed: boolean = true) => {
+  let volume = userStore.volume
+  isNeed && (isPlay.value = false)
+  return transitionVolume(volume, false)
 }
+// 音量过渡
+let timer: NodeJS.Timeout | null = null
+const transitionVolume = (
+  volume: number,
+  target: boolean = true,
+): Promise<void> => {
+  clearInterval(timer!)
+
+  const playStep = 15
+  const pauseStep = 10
+
+  return new Promise((resolve) => {
+
+    if (target) {
+      timer = setInterval(() => {
+        const next = audio.value!.volume + volume / playStep
+        audio.value!.volume = Math.min(next, volume)
+
+        if (audio.value!.volume >= volume) {
+          clearInterval(timer!)
+          resolve()
+        }
+      }, 50)
+      return
+    }
+
+
+    timer = setInterval(() => {
+      const next = audio.value!.volume - volume / pauseStep
+      audio.value!.volume = Math.max(next, 0)
+
+      if (audio.value!.volume <= 0) {
+        clearInterval(timer!)
+        originPause.call(audio.value)
+        audio.value!.volume = volume // 为下次播放复位
+        resolve()
+      }
+    }, 50)
+  })
+}
+
 
 const reset = () => {
   musicStore.currentTime = 0
@@ -82,6 +127,7 @@ const reset = () => {
   // 这里需要停止timeupdate的事件监视，因为在暂停音乐时会过渡结束（就相当于还是在播放一段时间），
   //  这样会导致进度条进度重置不及时
   timeState.stop = true // 在每次play方法时都会重置stop值
+
 }
 
 const end = () => {

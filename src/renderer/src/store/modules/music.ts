@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, nextTick ,watch} from 'vue'
+import { ref, nextTick, watch } from 'vue'
 import { GetMusicDetailData, CurrentItem, RuntimeList, Lyric, Yrc } from '@/types/musicList'
 import { getLyricApi, getDynamicCoverApi, getMusicUrlApi, getIntelligenceListApi } from '@/api/musicLits'
 import { parseLrc, parseYrc } from '@lrc-player/parse'
@@ -59,36 +59,40 @@ export const useMusicStore = defineStore('my-music', () => {
 
   // 监听当前索引变化 记录随机播放的上一首歌曲索引
   watch(
-  () => currentIndex.value,
-  (value, oldValue) => {
-    if (orderStatusVal.value !== 2) return
-    if (oldValue === undefined) return
+    () => currentIndex.value,
+    (value, oldValue) => {
+      if (orderStatusVal.value !== 2) return
+      if (oldValue === undefined) return
 
-    lastIndexList.value.push(oldValue)
-    // 只记录10条
-    if (lastIndexList.value.length > 10) {
-      lastIndexList.value.shift()
+      lastIndexList.value.push(oldValue)
+      // 只记录10条
+      if (lastIndexList.value.length > 10) {
+        lastIndexList.value.shift()
+      }
     }
-  }
-)
-// 切回随机播放清除上一首歌曲索引列表
-watch(
-  () => orderStatusVal.value,
-  (mode, oldMode) => {
-    if (mode === 2 && oldMode !== 2) {
-      lastIndexList.value = []
+  )
+  // 切回随机播放清除上一首歌曲索引列表
+  watch(
+    () => orderStatusVal.value,
+    (mode, oldMode) => {
+      if (mode === 2 && oldMode !== 2) {
+        lastIndexList.value = []
+      }
     }
-  }
-)
+  )
   // 获取音乐url并播放
   const getMusicUrlHandler = async (val: GetMusicDetailData, i?: number) => {
-    window.$audio.reset()
-    songs.value = val
     getLyric(val.id)
     getDynamicCover(val.id)
     // 更新当前索引
     currentIndex.value = i || currentIndex.value
     const { data } = await getMusicUrlApi(val.id)
+    songs.value = val
+
+    window.$audio.reset()
+
+    await window.$audio.pause(false)
+
     musicUrl.value = data[0].url.split('?')[0] || ''
     nextTick(() => {
       const el = window.$audio?.el
@@ -163,13 +167,13 @@ watch(
     playEnd()
   }
   // 初始化播放
-  const initPlay = async (val?:number) => {
+  const initPlay = async (val?: number) => {
     // 切换到心动模式时，重置索引为0
     if (val === 0) {
-    return  currentIndex.value = 0
+      return currentIndex.value = 0
     }
     // 心动切其他时，重头播放该歌单
-    await getMusicUrlHandler(runtimeList.value!.tracks[0],0)
+    await getMusicUrlHandler(runtimeList.value!.tracks[0], 0)
   }
   // 获取歌词
   const lrcMode = ref<0 | 1>(0) // 0 逐行 1 逐字
@@ -199,6 +203,8 @@ watch(
     }
   }
 
+  //  音乐侧边栏是否显示
+  const drawerShow = ref<Boolean>(false)
 
   return {
     currentItem,
@@ -222,6 +228,8 @@ watch(
     initPlay,
     playEnd,
     cutSongHandler,
+    currentIndex,
+    drawerShow,
   }
 
 }, { persist: true })

@@ -5,7 +5,7 @@
       <span style="margin: 0 5px;line-height: 24px">/</span>
       <div v-if="props.songs?.ar" class="total-time">{{ formattingTime(props.songs.dt) }}</div>
     </div>
-    <el-icon class="list cursor-pointer text-[20px]">
+    <el-icon class="list cursor-pointer text-[20px]" @click="musicStore.drawerShow = !musicStore.drawerShow">
       <Expand />
     </el-icon>
     <Volume :audio="props.audio"></Volume>
@@ -15,9 +15,9 @@
 
 <script setup lang="ts">
 import { formattingTime } from "@/utils/utils";
-import { ref } from 'vue'
 import { userAudio } from '@/components/MusicPlayer/index.vue'
 import { GetMusicDetailData } from '@/types/musicList'
+import { useMusicStore } from "@/store";
 import Volume from "@/components/MusicPlayer/Volume.vue";
 
 interface Props {
@@ -27,7 +27,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-
+const musicStore = useMusicStore()
 
 
 </script>

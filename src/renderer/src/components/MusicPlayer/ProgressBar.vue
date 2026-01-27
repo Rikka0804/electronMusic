@@ -4,9 +4,9 @@
       :class="{ 'is-dragging': isSeeking }"
       v-model="slider"
       :show-tooltip="false"
-      @mousedown="onStart"
-      @mouseup="onEnd"
+      @input="onStart"
       @change="onEnd"
+
     />
   </div>
 </template>
@@ -35,9 +35,7 @@ const duration = computed(() => {
 /** slider 百分比 */
 const slider = computed<number>({
   get() {
-    const time = isSeeking.value
-      ? tempTime.value
-      : musicStore.currentTime
+    const time =  musicStore.currentTime
 
     return duration.value
       ? (time / duration.value) * 100
@@ -46,19 +44,20 @@ const slider = computed<number>({
   set(val) {
     const time = (val * duration.value) / 100
     tempTime.value = time
+
   }
 })
 
 const onStart = () => {
   isSeeking.value = true
-  tempTime.value = musicStore.currentTime
+
 }
 
 const onEnd = () => {
-  if (!isSeeking.value) return
+
   isSeeking.value = false
 
-  // ⭐ 松手才真正设置 audio
+  // 松手才真正设置 audio
   window.$audio.time = tempTime.value
   musicStore.currentTime = tempTime.value
 }

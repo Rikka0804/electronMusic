@@ -4,7 +4,7 @@
       <el-input prefix-icon="Search" clearable placeholder="搜索" v-model="searchKey" @focus="isFocus = true"
         @blur="isFocus = false" :class="{ active: isFocus || searchKey }" />
     </div>
-    <div class="list mt-[15px]">
+    <div class="list mt-[15px]" >
       <div class="list-title ">
         <div v-for="config in normalizedColumns" v-show="!config.hidden" :key="config.title" class="title-item"
           :class="config.class" :style="config._style">
@@ -33,11 +33,11 @@
                 <div class="title-box  flex">
                   <el-image lazy style="width: 50px; height: 50px" :src="value.al.picUrl + '?param=150y150'"
                     class="title-img" />
-                  <div class="title-info ml-[10px] flex flex-col justify-between flex-1">
-                    <div class="title-name">{{ value.name }}</div>
-                    <div class="title-artist"> <span v-for="(ar, index) in value.ar" :key="ar.id || index" :style="{
+                  <div class="title-info ml-[10px] flex flex-col justify-between flex-1" >
+                    <div class="title-name" :class="{'active': musicStore.songs?.id === value.id}">{{ value.name }}</div>
+                    <div class="title-artist" :class="{'active': musicStore.songs?.id === value.id}"> <span v-for="(ar, index) in value.ar" :key="ar.id || index" :style="{
                       cursor: ar.id ? 'pointer' : 'default',
-                      color: ar.id ? '' : 'rgba(150, 150, 150, 0.60)'
+
                     }">
                         {{ ar.name || '未知歌手' }}
                         <span v-if="index < value.ar.length - 1" style="color: #969696"> / </span>
@@ -175,7 +175,7 @@ const playHandler = (item: GetMusicDetailData, index: number) => {
 
 .list {
   .empty {
-    margin-left: 20px;
+    //margin-left: 20px;
   }
 }
 
@@ -197,8 +197,6 @@ const playHandler = (item: GetMusicDetailData, index: number) => {
 
 .list-container {
   .musciList-item {
-
-
     .item-container {
       color: $darkText;
       border-radius: 10px;
@@ -220,11 +218,15 @@ const playHandler = (item: GetMusicDetailData, index: number) => {
         }
 
         .title-info {
+          .active{
+            color: red !important;
+          }
 
           .title-name {
             @include textOverflow(1);
             font-size: 15px;
             font-weight: bold;
+
           }
 
           .title-artist {

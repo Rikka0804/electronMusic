@@ -58,3 +58,33 @@ export const columns: Columns[] = [
     type: 'time',
   }
 ]
+
+export const drawerColumns: Columns[] = [
+  {
+    title: '标题',
+    prop: 'name',
+    picUrl: 'al.picUrl',
+    width: '80%',
+    class: 'title',
+    type: 'title',
+    style: {
+      marginLeft: '15px',
+
+    }
+  },
+   {
+    title: '喜欢',
+    width: '45px',
+    type: 'handle',
+    class: 'handle',
+    icon: ['love']
+  },
+  {
+    title: '时长',
+    prop: 'dt',
+    width: '20%',
+    class: 'time',
+    type: 'time',
+  }
+
+]

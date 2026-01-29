@@ -1,11 +1,11 @@
 <template>
   <div class="musicList mt-[15px]">
-    <div class="search">
+    <div class="search" v-if="needSearch">
       <el-input prefix-icon="Search" clearable placeholder="搜索" v-model="searchKey" @focus="isFocus = true"
         @blur="isFocus = false" :class="{ active: isFocus || searchKey }" />
     </div>
     <div class="list mt-[15px]" >
-      <div class="list-title ">
+      <div class="list-title " v-if="needTitle">
         <div v-for="config in normalizedColumns" v-show="!config.hidden" :key="config.title" class="title-item"
           :class="config.class" :style="config._style">
           {{ config.title }}
@@ -66,9 +66,14 @@ import { useUserStore } from '@/store'
 import { useMusicStore } from '@/store'
 interface Props {
   columns: Columns[],
-  list: GetMusicDetailData[]
+  list: GetMusicDetailData[],
+  needSearch?: boolean
+  needTitle?: boolean
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  needSearch: false,
+  needTitle: true
+})
 interface Emits {
   (e: 'play', item: GetMusicDetailData, index: number): void
   (e: 'updateRuntimeList'): void

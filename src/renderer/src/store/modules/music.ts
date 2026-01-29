@@ -204,7 +204,7 @@ export const useMusicStore = defineStore('my-music', () => {
   }
 
   //  音乐侧边栏是否显示
-  const drawerShow = ref<Boolean>(false)
+  const drawerShow = ref<boolean>(false)
 
   return {
     currentItem,
@@ -232,4 +232,9 @@ export const useMusicStore = defineStore('my-music', () => {
     drawerShow,
   }
 
-}, { persist: true })
+}, {
+  persist: {
+    omit: ['drawerShow']
+  }
+
+})

@@ -78,7 +78,7 @@ const back = () => {
       display: flex;
       align-items: center;
       position: relative;
-      z-index: 2006;
+      z-index: 2000;
 
       .handler {
         display: flex;

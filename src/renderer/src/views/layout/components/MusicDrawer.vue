@@ -14,6 +14,10 @@
         清空
       </div>
     </div>
+    <div class="drawer-list flex-1 overflow-auto">
+      <MusicList :columns="drawerColumns" :list="musicStore.runtimeList?.tracks || []" :needSearch="false"
+        :needTitle="false" />
+    </div>
   </el-drawer>
 
 </template>
@@ -21,6 +25,9 @@
 <script lang="ts" setup>
 import { useMusicStore } from '@/store';
 import { computed } from 'vue'
+import MusicList from '@/views/playList/components/MusicList.vue';
+import { drawerColumns } from '@/views/playList/musciList';
+
 const musicStore = useMusicStore()
 
 const drawer = computed({
@@ -48,8 +55,11 @@ const drawer = computed({
   border-radius: 10px 0 0 10px;
   background-color: rgba(40, 40, 40, 0.7);
 
+
   .music-drawer-body {
     padding: 0;
+    display: flex;
+    flex-direction: column;
 
     .drawer-head {
       padding: 15px;

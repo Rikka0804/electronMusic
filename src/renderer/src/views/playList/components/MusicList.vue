@@ -4,7 +4,7 @@
       <el-input prefix-icon="Search" clearable placeholder="搜索" v-model="searchKey" @focus="isFocus = true"
         @blur="isFocus = false" :class="{ active: isFocus || searchKey }" />
     </div>
-    <div class="list mt-[15px]" >
+    <div class="list mt-[15px]">
       <div class="list-title " v-if="needTitle">
         <div v-for="config in normalizedColumns" v-show="!config.hidden" :key="config.title" class="title-item"
           :class="config.class" :style="config._style">
@@ -13,7 +13,7 @@
       </div>
       <div class="list-container">
         <div class="musciList-item" v-for="(value, index) in chunkList" :key="value.id"
-          @dblclick="playHandler(value, index)" @click="currentId = value.id">
+          @dblclick="playHandler(value)" @click="currentId = value.id">
           <div class="item-container flex text-[14px] h-[70px] items-center justify-around"
             :class="{ 'active': currentId === value.id }">
             <div v-for="config in normalizedColumns" :key="config.type" :class="config.class" :style="config._style">
@@ -33,12 +33,14 @@
                 <div class="title-box  flex">
                   <el-image lazy style="width: 50px; height: 50px" :src="value.al.picUrl + '?param=150y150'"
                     class="title-img" />
-                  <div class="title-info ml-[10px] flex flex-col justify-between flex-1" >
-                    <div class="title-name" :class="{'active': musicStore.songs?.id === value.id}">{{ value.name }}</div>
-                    <div class="title-artist" :class="{'active': musicStore.songs?.id === value.id}"> <span v-for="(ar, index) in value.ar" :key="ar.id || index" :style="{
-                      cursor: ar.id ? 'pointer' : 'default',
+                  <div class="title-info ml-[10px] flex flex-col justify-between flex-1">
+                    <div class="title-name" :class="{ 'active': musicStore.songs?.id === value.id }">{{ value.name }}
+                    </div>
+                    <div class="title-artist" :class="{ 'active': musicStore.songs?.id === value.id }"> <span
+                        v-for="(ar, index) in value.ar" :key="ar.id || index" :style="{
+                          cursor: ar.id ? 'pointer' : 'default',
 
-                    }">
+                        }">
                         {{ ar.name || '未知歌手' }}
                         <span v-if="index < value.ar.length - 1" style="color: #969696"> / </span>
                       </span></div>
@@ -67,12 +69,14 @@ import { useMusicStore } from '@/store'
 interface Props {
   columns: Columns[],
   list: GetMusicDetailData[],
-  needSearch?: boolean
-  needTitle?: boolean
+  needSearch?: boolean,
+  needTitle?: boolean,
+  type?: 'playList' | 'drawerList' // 播放列表 或 抽屉列表
 }
 const props = withDefaults(defineProps<Props>(), {
-  needSearch: false,
-  needTitle: true
+  needSearch: true,
+  needTitle: true,
+  type: 'playList'
 })
 interface Emits {
   (e: 'play', item: GetMusicDetailData, index: number): void
@@ -85,15 +89,6 @@ const userStore = useUserStore()
 const likeSet = computed(() => new Set(userStore.userLikeIds))
 const isLike = (data: GetMusicDetailData) => likeSet.value.has(data.id)
 const mylist = ref<GetMusicDetailData[]>([])
-mylist.value = props.list.map(item => ({
-  ...item,
-  _duration: formattingTime(item.dt),
-  _searchText: [
-    item.name?.toLowerCase() || '',
-    item.al?.name?.toLowerCase() || '',
-    ...(item.ar?.map(a => a.name?.toLowerCase() || '') || [])
-  ].join(' ') //预处理搜索关键词
-}))
 
 const chunkList = ref<GetMusicDetailData[]>([])
 const chunkSize = 20
@@ -112,12 +107,26 @@ const renderChunked = (fullList: GetMusicDetailData[]) => {
   appendChunk()
 }
 
+watch(() => props.list, (val) => {
+  mylist.value = val.map(item => ({
+    ...item,
+    _duration: formattingTime(item.dt),
+    _searchText: [
+      item.name?.toLowerCase() || '',
+      item.al?.name?.toLowerCase() || '',
+      ...(item.ar?.map(a => a.name?.toLowerCase() || '') || [])
+    ].join(' ') //预处理搜索关键词
+  }))
+  renderChunked(mylist.value)
+}, { immediate: true })
+
 watch(() => searchKey.value, (val) => {
   const key = val.trim().toLowerCase()
   renderChunked(
     key ? mylist.value.filter(item => item._searchText?.includes(key)) : mylist.value
   )
 }, { immediate: true })
+
 
 const normalizedColumns = ref(
   props.columns.map(col => ({
@@ -128,18 +137,29 @@ const normalizedColumns = ref(
 const currentId = ref<number>(0)
 // 双击击播放音乐
 const musicStore = useMusicStore()
-const playHandler = (item: GetMusicDetailData, index: number) => {
-  // 当前音乐列表是当前播放的音乐
-  if (musicStore.currentItem?.id === musicStore.runtimeList?.id) {
+const playHandler = (item: GetMusicDetailData) => {
+  const index = mylist.value.findIndex(i => i.id === item.id)
+  // 区分播放列表和抽屉列表点击事件
+  if (props.type === 'drawerList') {
     if (musicStore.songs?.id === item.id) {
-    return  window.$audio.togglePlay()
+      return window.$audio.togglePlay()
+    }
+    emit('play', item, index)
+
+  } else {
+    // 当前音乐列表是当前播放的音乐
+    if (musicStore.currentItem?.id === musicStore.runtimeList?.id) {
+      if (musicStore.songs?.id === item.id) {
+        return window.$audio.togglePlay()
+      }
+    }
+    emit('play', item, index)
+    // 播放列表不是当前播放的音乐更新播放列表
+    if (musicStore.runtimeList?.id !== musicStore.currentItem?.id) {
+      emit('updateRuntimeList')
     }
   }
-  emit('play', item, index)
-  // 播放列表不是当前播放的音乐更新播放列表
-  if (musicStore.runtimeList?.id !== musicStore.currentItem?.id) {
-    emit('updateRuntimeList')
-  }
+
 
 }
 
@@ -223,7 +243,7 @@ const playHandler = (item: GetMusicDetailData, index: number) => {
         }
 
         .title-info {
-          .active{
+          .active {
             color: red !important;
           }
 

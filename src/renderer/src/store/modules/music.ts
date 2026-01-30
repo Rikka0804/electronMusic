@@ -84,8 +84,10 @@ export const useMusicStore = defineStore('my-music', () => {
   const getMusicUrlHandler = async (val: GetMusicDetailData, i?: number) => {
     getLyric(val.id)
     getDynamicCover(val.id)
+
     // 更新当前索引
-    currentIndex.value = i || currentIndex.value
+    currentIndex.value = i ?? currentIndex.value
+
     const { data } = await getMusicUrlApi(val.id)
     songs.value = val
 

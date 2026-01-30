@@ -29,6 +29,7 @@ const handleUpdateRuntimeList = () => {
 
 // 播放歌曲
 const handlePlay = async (item , index) => {
+
   const type = musicStore.orderStatusVal
   // 非心动模式
   if(type !== 0) {

@@ -15,8 +15,8 @@
       </div>
     </div>
     <div class="drawer-list flex-1 overflow-auto">
-      <MusicList :columns="drawerColumns" :list="musicStore.runtimeList?.tracks || []" :needSearch="false"
-        :needTitle="false" />
+      <MusicList :columns="drawerColumns" :list="runtimeTracks" :needSearch="false"
+        :needTitle="false" type="drawerList" @play="handlePlay" />
     </div>
   </el-drawer>
 
@@ -29,6 +29,11 @@ import MusicList from '@/views/playList/components/MusicList.vue';
 import { drawerColumns } from '@/views/playList/musciList';
 
 const musicStore = useMusicStore()
+const runtimeTracks = computed(() => {
+  return Array.isArray(musicStore.runtimeList?.tracks)
+    ? musicStore.runtimeList.tracks
+    : []
+})
 
 const drawer = computed({
   get() {
@@ -41,6 +46,12 @@ const drawer = computed({
 
   }
 })
+
+// 播放歌曲
+const handlePlay = async (item, index) => {
+  await musicStore.getMusicUrlHandler(item, index)
+
+}
 
 
 

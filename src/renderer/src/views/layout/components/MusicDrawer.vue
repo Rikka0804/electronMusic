@@ -65,7 +65,7 @@ const handlePlay = async (item, index) => {
   top: 10% !important;
   border-radius: 10px 0 0 10px;
   background-color: rgba(40, 40, 40, 0.7);
-
+  backdrop-filter: blur(60px) saturate(210%);
 
   .music-drawer-body {
     padding: 0;

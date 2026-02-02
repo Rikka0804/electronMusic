@@ -1,7 +1,25 @@
 import { reactive } from "vue"
+import type { PlayList } from '@/types/musicList'
 export const asideFontSize = 14
 export const needUseComparisonPaths = ['/home', '/fm', '/video', '/follow', '/local', '/lately', '/cloud']
-export const originAsideMenuConfig = [
+type AsideMenuListItem = {
+  name: string
+  path: string
+  icon: string
+  asideFontSize?: number
+  id: number
+} & Partial<PlayList>
+
+interface AsideMenuGroup {
+  title: string | false
+  mark: string | false
+  list: AsideMenuListItem[]
+  type?: 'collapsed'
+  isCollapsed?: boolean
+  asideFontSize?: number
+}
+
+export const originAsideMenuConfig : AsideMenuGroup[]= [
   {
     title: false,
     mark: false,
@@ -13,13 +31,13 @@ export const originAsideMenuConfig = [
         asideFontSize,
         id: 1,
       },
-      {
-        name: '云音乐精选',
-        icon: 'icon-headphone-fill',
-        path: '/fm',
-        asideFontSize,
-        id: 2,
-      },
+      // {
+      //   name: '云音乐精选',
+      //   icon: 'icon-headphone-fill',
+      //   path: '/fm',
+      //   asideFontSize,
+      //   id: 2,
+      // },
 
     ],
   },
@@ -27,13 +45,13 @@ export const originAsideMenuConfig = [
     title: false,
     mark: 'my',
     list: [
-      {
-        name: '本地与下载',
-        icon: 'icon-xiazaibendi',
-        path: '/local',
-        asideFontSize,
-        id: 5,
-      },
+      // {
+      //   name: '本地与下载',
+      //   icon: 'icon-xiazaibendi',
+      //   path: '/local',
+      //   asideFontSize,
+      //   id: 5,
+      // },
       {
         name: '最近播放',
         icon: 'icon-zuijinlaifang',
@@ -42,27 +60,29 @@ export const originAsideMenuConfig = [
         id: 6,
       },
       {
-        name: '我的音乐云盘',
-        icon: 'icon-yunpan',
+        name: '音乐云盘',
+        icon: 'icon-headphone-fill',
         path: '/cloud',
         asideFontSize,
-        id: 7,
-      },
+        id: 7
+      }
     ],
   },
   {
     title: '创建的歌单',
-    mark: 'play',
+    mark: 'myCreateList',
     type: 'collapsed',
     isCollapsed: true,
-    list: []
+    list: [],
+    asideFontSize,
   },
   {
     title: '收藏的歌单',
     mark: 'subscribedList',
     type: 'collapsed',
     isCollapsed: true,
-    list: []
+    list: [],
+    asideFontSize,
   },
 ]
 

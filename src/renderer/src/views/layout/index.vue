@@ -27,19 +27,19 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, computed } from 'vue'
-import { useUserStore, useMusicStore } from '@/store';
-import { getUserInfoApi, getUserDetailApi } from '@/api/user'
+import { useMusicStore } from '@/store';
+
 import BaseAside from './components/BaseAside.vue'
 import BaseHeader from './components/BaseHeader.vue';
 import BaseButtom from './components/BaseButtom.vue';
 import MusicPlayer, { MusicPlayerInstanceType } from '@/components/MusicPlayer/index.vue'
-import { usePlayList } from '@/composables/usePlayList';
+import { useUserInfo } from '@/composables/useUserInfo';
 import MusicDrawer from './components/MusicDrawer.vue'
-
 // 音乐播放器实例
 const audioInstance = ref<MusicPlayerInstanceType>()
 
 const musicStore = useMusicStore()
+
 const refresh = ref(0) // 登录完成后强制刷新组件
 onMounted(async () => {
   if (audioInstance.value !== undefined) {
@@ -48,17 +48,11 @@ onMounted(async () => {
   }
   await getUserInfo()
 })
-const { getUserLikeList } = usePlayList()
+const { getUserInfoFn } = useUserInfo()
 const getUserInfo = async () => {
-
-
-  const res = await getUserInfoApi()
-  const { level, createDays } = await getUserDetailApi(res.account.id)
-  await getUserLikeList()
-  res.profile.level = level
-  res.profile.createDays = createDays
+  await getUserInfoFn()
   refresh.value++
-  useUserStore().setUser(res)
+
 }
 
 

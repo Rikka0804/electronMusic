@@ -2,7 +2,7 @@ import { request } from '@/utils/request'
 import { GetUserPlayListRes, GetPlayListDetailRes, GetMusicDetailRes, GetMusicUrlRes, GetLyricRes ,GetIntelliganceListRes} from '@/types/musicList'
 
 // 获取用户歌单信息
-export const getUserPlayList = (uid: number) =>
+export const getUserPlayListApi = (uid: number) =>
   request<GetUserPlayListRes>('/user/playlist', 'get', { uid })
 
 

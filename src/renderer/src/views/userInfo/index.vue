@@ -9,7 +9,7 @@
 <script lang="ts" setup>
 import userCard from './components/userCard.vue';
 import userSongList from './components/userSongList.vue';
-import { getUserPlayList } from '@/api/musicLits'
+import { getUserPlayListApi } from '@/api/musicLits'
 import { getUserDetailApi } from '@/api/user'
 import { PlayList } from '@/types/musicList'
 import {Profile} from '@/types/user'
@@ -44,7 +44,7 @@ const init = async () => {
     userLoading.value = false
   }
   themeStore.change(userInfo.value?.avatarUrl)
-  const res = await getUserPlayList(uid.value)
+  const res = await getUserPlayListApi(uid.value)
   loading.value = false
   list.value = res.playlist
 }

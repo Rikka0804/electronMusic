@@ -244,7 +244,7 @@ const playHandler = (item: GetMusicDetailData) => {
 
         .title-info {
           .active {
-            color: red !important;
+            color: rgb(255,60,60)!important;
           }
 
           .title-name {

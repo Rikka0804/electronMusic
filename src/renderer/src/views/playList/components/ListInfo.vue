@@ -30,7 +30,7 @@
         </div>
       </div>
       <div class="listButton mt-auto">
-        <el-button type="danger" style="width: 100px;">▶ 播放全部</el-button>
+        <el-button type="danger" style="width: 100px;" @click="playAllHandler">▶ 播放全部</el-button>
         <el-button type="info" title="收藏" style="width: 100px;"
           v-if="userStore.userInfo?.profile.userId !== musicStore.currentItem.userId && !musicStore.currentItem.subscribed">
           <el-icon size="18px" class="mr-[5px]">
@@ -83,6 +83,15 @@ watch(() => musicStore.currentItem, (val) => {
     themeStore.change(val.coverImgUrl)
   }
 }, { immediate: true })
+
+interface Emits {
+
+  (e: 'playAll'): void
+}
+const emit = defineEmits<Emits>()
+const playAllHandler = () => {
+  emit('playAll')
+}
 
 
 

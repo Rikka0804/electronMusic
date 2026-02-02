@@ -22,13 +22,13 @@ import { useRouter } from 'vue-router'
 import img from '@/assets/img.jpg'
 
 const userStore = useUserStore()
-interface props {
+interface Props {
   musicList: PlayList[],
   uid: number,
   loading: boolean
 
 }
-const props = defineProps<props>()
+const props = defineProps<Props>()
 
 const currentList = ref(list[0].name)
 const playlist = computed(() => {

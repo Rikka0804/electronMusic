@@ -42,8 +42,11 @@ export const useMusicStore = defineStore('my-music', () => {
       runtimeIds.value = ids
     }
   }
-  const clearRuntimeList = () => {
+  // 清空当前正在播放的音乐列表
+  const clearRuntimeList = async () => {
     runtimeList.value = null
+    await window.$audio.pause(false)
+    musicUrl.value = ''
   }
 
   // 当前用户正在播放的音乐
@@ -204,6 +207,8 @@ export const useMusicStore = defineStore('my-music', () => {
       videoPlayUrl.value = ''
     }
   }
+
+
 
   //  音乐侧边栏是否显示
   const drawerShow = ref<boolean>(false)

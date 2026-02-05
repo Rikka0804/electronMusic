@@ -7,7 +7,7 @@
           ? musicStore.runtimeList.tracks.length
           : 0 }}</span>
       </div>
-      <div class="drawer-head-clean text-[15px] flex items-center cursor-pointer">
+      <div class="drawer-head-clean text-[15px] flex items-center cursor-pointer" @click="musicStore.clearRuntimeList">
         <el-icon class="mr-[5px]">
           <Delete />
         </el-icon>

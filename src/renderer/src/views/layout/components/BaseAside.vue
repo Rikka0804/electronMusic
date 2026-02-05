@@ -28,7 +28,7 @@
                 </el-icon>
               </span>
             </div>
-            <div v-if="menuItem.mark === 'subscribedList'" class="cursor-pointer">
+            <div v-if="menuItem.mark == 'myCreateList'" class="cursor-pointer">
               <el-icon>
                 <CirclePlusFilled />
               </el-icon>

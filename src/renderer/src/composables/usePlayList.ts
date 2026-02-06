@@ -4,7 +4,8 @@ import { reactive } from 'vue'
 import { CurrentItem, GetMusicDetailData, PlayList } from '@/types/musicList'
 
 interface PlayListStateType {
-  loading: boolean
+  listLoading: boolean,
+  InfoLoading: boolean,
   playList: GetMusicDetailData[],
   ids: number[],
   listInfo: PlayList
@@ -16,25 +17,30 @@ export function usePlayList() {
   const userStore = useUserStore()
 
   const playListState = reactive<PlayListStateType>({
-    loading: false,
+    InfoLoading: false,
+    listLoading: false,
     playList: [],
     ids: [],
     listInfo: {} as PlayList
   })
 
   const getPlayListDetail = async (id: number) => {
-    playListState.loading = true
+    playListState.listLoading = true
+    playListState.InfoLoading = true
 
     try {
       const res = await getPlayListDetailApi(id)
+      playListState.listInfo = res.playlist
+      playListState.InfoLoading = false
       const ids = res.playlist.trackIds?.map(item => item.id).join(',') || ''
       const { songs } = await getSongDetailApi(ids)
       musicStore.updateCurrentItem({ ...res.playlist, tracks: songs })
       playListState.playList = songs || []
       playListState.ids = songs?.map((item) => item.id)
-      playListState.listInfo = res.playlist
+      playListState.listLoading = false
     } finally {
-      playListState.loading = false
+      playListState.listLoading = false
+      playListState.InfoLoading = false
     }
   }
 

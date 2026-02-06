@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
-    <ListInfo :loading="playListState.loading" @playAll="playAllHandler" />
-    <MusicList v-if="!playListState.loading" :columns="columns" :list="playListState.playList" @play="handlePlay"
+    <ListInfo :loading="playListState.InfoLoading" @playAll="playAllHandler" :listInfo="playListState.listInfo" />
+    <MusicList v-if="!playListState.InfoLoading" :loading="playListState.listLoading" :columns="columns" :list="playListState.playList" @play="handlePlay"
       @updateRuntimeList="handleUpdateRuntimeList" />
   </div>
 </template>
@@ -12,7 +12,7 @@ import MusicList from './components/MusicList.vue';
 import { columns } from './musciList'
 import { watch } from 'vue'
 import { useRoute } from 'vue-router';
-
+import { useMusicStore } from '@/store'
 
 import { usePlayList } from '@/composables/usePlayList';
 const { playListState, getPlayListDetail } = usePlayList()
@@ -30,7 +30,7 @@ watch(
   { immediate: true }
 )
 
-import { useMusicStore } from '@/store'
+
 const musicStore = useMusicStore()
 
 const handleUpdateRuntimeList = () => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="musicList mt-[15px]">
+  <div class="musicList mt-[15px]" v-if="!loading && list.length > 0">
     <div class="search" v-if="needSearch">
       <el-input prefix-icon="Search" clearable placeholder="搜索" v-model="searchKey" @focus="isFocus = true"
         @blur="isFocus = false" :class="{ active: isFocus || searchKey }" />
@@ -57,6 +57,7 @@
 
     </div>
   </div>
+  <div v-else v-loading="props.loading" class="h-[80px]"></div>
 </template>
 
 <script setup lang="ts">
@@ -71,11 +72,13 @@ interface Props {
   list: GetMusicDetailData[],
   needSearch?: boolean,
   needTitle?: boolean,
+  loading?: boolean,
   type?: 'playList' | 'drawerList' // 播放列表 或 抽屉列表
 }
 const props = withDefaults(defineProps<Props>(), {
   needSearch: true,
   needTitle: true,
+  loading: false,
   type: 'playList'
 })
 interface Emits {

@@ -1,49 +1,49 @@
 <template>
-  <div class="listInfo flex" v-if="!props.loading && musicStore.currentItem?.coverImgUrl">
+  <div class="listInfo flex" v-if="!props.loading && props.listInfo?.coverImgUrl">
     <div class="left bgSetting mr-[20px]" ref="left">
       <span class="count">
         <el-icon class="mr-[5px]">
           <Headset />
         </el-icon>
-        {{ formatNumberToMillion(musicStore.currentItem.playCount!) }}
+        {{ formatNumberToMillion(props.listInfo.playCount!) }}
       </span>
     </div>
     <div class="right h-[180px] flex flex-col">
       <div class="listName">
-        {{ musicStore.currentItem.name }}
+        {{ props.listInfo.name }}
       </div>
-      <div class="listDescription text-[15px]" v-if="musicStore.currentItem.description">
-        {{ musicStore.currentItem.description }}
+      <div class="listDescription text-[15px]" v-if="props.listInfo.description">
+        {{ props.listInfo.description }}
       </div>
       <div class="listInfo flex items-center">
         <div class="createPerson flex cursor-pointer items-center mr-[15px]"
-          @click="wentUserInfo(musicStore.currentItem.userId)">
+          @click="wentUserInfo(props.listInfo.userId)">
           <div class="avator bgSetting rounded-full size-[25px] mr-[10px]"
-            :style="{ backgroundImage: `url(${musicStore.currentItem.creator.avatarUrl})` }">
+            :style="{ backgroundImage: `url(${props.listInfo.creator.avatarUrl})` }">
           </div>
           <div class="nickName text-[15px]">
-            {{ musicStore.currentItem.creator.nickname }}
+            {{ props.listInfo.creator.nickname }}
           </div>
         </div>
         <div class="createTime">
-          {{ formatDate(musicStore.currentItem.createTime!, 'YYYY-MM-DD') }} 创建
+          {{ formatDate(props.listInfo.createTime!, 'YYYY-MM-DD') }} 创建
         </div>
       </div>
       <div class="listButton mt-auto">
         <el-button type="danger" style="width: 100px;" @click="playAllHandler">▶ 播放全部</el-button>
         <el-button type="info" title="收藏" style="width: 100px;"
-          v-if="userStore.userInfo?.profile.userId !== musicStore.currentItem.userId && !musicStore.currentItem.subscribed">
+          v-if="userStore.userInfo?.profile.userId !== props.listInfo.userId && !props.listInfo.subscribed">
           <el-icon size="18px" class="mr-[5px]">
             <Star />
           </el-icon>
-          {{ formatNumberToMillion(musicStore.currentItem.subscribedCount) }}
+          {{ formatNumberToMillion(props.listInfo.subscribedCount) }}
         </el-button>
         <el-button type="info" title="取消收藏" style="width: 100px;"
-          v-if="userStore.userInfo?.profile.userId !== musicStore.currentItem.userId && musicStore.currentItem.subscribed">
+          v-if="userStore.userInfo?.profile.userId !== props.listInfo.userId && props.listInfo.subscribed">
           <el-icon size="18px" class="mr-[5px]" style="color: yellow;">
             <StarFilled />
           </el-icon>
-          {{ formatNumberToMillion(musicStore.currentItem.subscribedCount) }}
+          {{ formatNumberToMillion(props.listInfo.subscribedCount) }}
         </el-button>
         <el-button type="info" title="下载" style="width: 100px;">
           <el-icon size="18px" class="mr-[5px]">
@@ -62,20 +62,21 @@
 </template>
 
 <script setup lang="ts">
-import { useMusicStore, useUserStore, useThemeStore } from '@/store/index';
+import { useUserStore, useThemeStore } from '@/store/index';
 import { toggleImg, formatNumberToMillion, formatDate } from '@/utils/utils';
+import { PlayList } from '@/types/musicList'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router';
-const musicStore = useMusicStore()
 const userStore = useUserStore()
 const themeStore = useThemeStore()
 const left = ref<HTMLDivElement>()
 interface Props {
   loading: boolean
+  listInfo: PlayList
 }
 const props = defineProps<Props>()
 
-watch(() => musicStore.currentItem, (val) => {
+watch(() => props.listInfo, (val) => {
   if (val?.coverImgUrl) {
     toggleImg(val.coverImgUrl, '350y350').then(img => {
       if (left.value) left.value.style.backgroundImage = `url(${img.src})`
@@ -102,7 +103,7 @@ const wentUserInfo = (id: number) => {
     path: '/userInfo',
     query: {
       uid: id,
-      type: userStore.userInfo?.profile.userId === musicStore.currentItem?.userId ? 'my' : 'other'
+      type: userStore.userInfo?.profile.userId === props.listInfo?.userId ? 'my' : 'other'
     }
   })
 

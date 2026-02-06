@@ -30,9 +30,7 @@ export const useUserStore = defineStore(
     }
 
     //当前播放器的音量
-    const volume = ref<number>(
-      Number(localStorage.getItem('volume') ?? 50)
-    )
+    const volume = ref<number>( 0.5)
 
     //侧边栏
     const asideMenu = ref([...asideMenuConfig])

@@ -37,7 +37,6 @@ const setVolume = (v: number) => {
 
   props.audio.volume = v
   userStore.volume = v
-  localStorage.setItem('volume', String(v))
 }
 
 /** 初始化 / audio 就绪时同步音量 */
@@ -46,12 +45,11 @@ watch(
   (audio) => {
     if (!audio) return
 
-    const saved = Number(localStorage.getItem('volume'))
+    const saved = userStore.volume
     const initVolume = Number.isNaN(saved) ? 1 : saved
 
     model.value = initVolume * 100
     audio.volume = initVolume
-    userStore.volume = initVolume
   },
   { immediate: true }
 )
@@ -79,7 +77,7 @@ const input = () => {
   setVolume(volume.value)
 }
 
-/** 松手后同步到 store（可选，其实 setVolume 已经做了） */
+/** 松手后同步到 store */
 const change = () => {
   userStore.volume = volume.value
 }

@@ -12,47 +12,49 @@
         </div>
       </div>
       <div class="list-container">
-        <div class="musciList-item" v-for="(value, index) in chunkList" :key="value.id"
-          @dblclick="playHandler(value)" @click="currentId = value.id">
-          <div class="item-container flex text-[14px] h-[70px] items-center justify-around"
-            :class="{ 'active': currentId === value.id }">
-            <div v-for="config in normalizedColumns" :key="config.type" :class="config.class" :style="config._style">
-              <template v-if="config.type === 'index'">
-                {{ index + 1 }}
-              </template>
-              <template v-if="config.type === 'time'">
-                {{ value._duration }}
-              </template>
-              <template v-if="config.type === 'handle'">
-                <i v-for="val in config.icon" :key="val" class="iconfont cursor-pointer" :class="{
-                  'icon-xihuan1': val === 'love' && isLike(value),
-                  'icon-xihuan': val === 'love' && !isLike(value)
-                }" />
-              </template>
-              <template v-if="config.type === 'title'">
-                <div class="title-box  flex">
-                  <el-image lazy style="width: 50px; height: 50px" :src="value.al.picUrl + '?param=150y150'"
-                    class="title-img" />
-                  <div class="title-info ml-[10px] flex flex-col justify-between flex-1">
-                    <div class="title-name" :class="{ 'active': musicStore.songs?.id === value.id }">{{ value.name }}
-                    </div>
-                    <div class="title-artist" :class="{ 'active': musicStore.songs?.id === value.id }"> <span
-                        v-for="(ar, index) in value.ar" :key="ar.id || index" :style="{
-                          cursor: ar.id ? 'pointer' : 'default',
+        <ContextMenu v-for="(value, index) in chunkList" :key="value.id" :items="getContextMenuList(props.type, value)">
+          <div class="musciList-item" @dblclick="playHandler(value)" @click="currentId = value.id">
+            <div class="item-container flex text-[14px] h-[70px] items-center justify-around"
+              :class="{ 'active': currentId === value.id }">
+              <div v-for="config in normalizedColumns" :key="config.type" :class="config.class" :style="config._style">
+                <template v-if="config.type === 'index'">
+                  {{ index + 1 }}
+                </template>
+                <template v-if="config.type === 'time'">
+                  {{ value._duration }}
+                </template>
+                <template v-if="config.type === 'handle'">
+                  <i v-for="val in config.icon" :key="val" class="iconfont cursor-pointer" :class="{
+                    'icon-xihuan1': val === 'love' && isLike(value),
+                    'icon-xihuan': val === 'love' && !isLike(value)
+                  }" />
+                </template>
+                <template v-if="config.type === 'title'">
+                  <div class="title-box  flex">
+                    <el-image lazy style="width: 50px; height: 50px" :src="value.al.picUrl + '?param=150y150'"
+                      class="title-img" />
+                    <div class="title-info ml-[10px] flex flex-col justify-between flex-1">
+                      <div class="title-name" :class="{ 'active': musicStore.songs?.id === value.id }">{{ value.name }}
+                      </div>
+                      <div class="title-artist" :class="{ 'active': musicStore.songs?.id === value.id }"> <span
+                          v-for="(ar, index) in value.ar" :key="ar.id || index" :style="{
+                            cursor: ar.id ? 'pointer' : 'default',
 
-                        }">
-                        {{ ar.name || '未知歌手' }}
-                        <span v-if="index < value.ar.length - 1" style="color: #969696"> / </span>
-                      </span></div>
+                          }">
+                          {{ ar.name || '未知歌手' }}
+                          <span v-if="index < value.ar.length - 1" style="color: #969696"> / </span>
+                        </span></div>
+                    </div>
                   </div>
-                </div>
-              </template>
-              <template v-if="config.type === 'album'">
-                <div class="album-name">{{ value.al.name || '未知专辑' }}</div>
-              </template>
+                </template>
+                <template v-if="config.type === 'album'">
+                  <div class="album-name">{{ value.al.name || '未知专辑' }}</div>
+                </template>
+              </div>
             </div>
           </div>
-        </div>
+        </ContextMenu>
+
       </div>
 
     </div>
@@ -64,12 +66,14 @@
 import { ref, computed, watch } from 'vue'
 import { formattingTime } from '@/utils/utils'
 import { type Columns } from '../musciList'
-import { GetMusicDetailData } from '@/types/musicList'
+import { GetMusicDetailData ,PlayList} from '@/types/musicList'
 import { useUserStore } from '@/store'
 import { useMusicStore } from '@/store'
+import ContextMenu from '@/components/ContextMenu/index.vue'
 interface Props {
   columns: Columns[],
   list: GetMusicDetailData[],
+  listInfo?: PlayList,
   needSearch?: boolean,
   needTitle?: boolean,
   loading?: boolean,
@@ -166,6 +170,55 @@ const playHandler = (item: GetMusicDetailData) => {
 
 }
 
+interface MenuItem {
+  label: string
+  value: string
+}
+//右键菜单按钮
+const getContextMenuList = (type: 'playList' | 'drawerList', item: GetMusicDetailData): MenuItem[] => {
+  const menu: MenuItem[] = []
+
+  // 根据id判断是否是当前播放的音乐，根据播放状态判断是暂停还是播放，播放需特殊处理
+  menu.push({
+    label: item.id === musicStore.songs?.id && musicStore.isPlay ? '暂停' : '播放',
+    value: item.id === musicStore.songs?.id && musicStore.isPlay ? 'pause' : 'play',
+  })
+
+  // 如果不是当前播放的音乐，添加下一首播放按钮
+  if (item.id !== musicStore.songs?.id) {
+    menu.push({
+      label: '下一首播放',
+      value: 'nextPlay'
+    })
+  }
+
+  // 如果是一般类型音乐则有评论 0 普通 1 2 网盘音乐
+  if (item.t == 0) {
+    menu.push({
+      label: '评论',
+      value: 'comment'
+    })
+  }
+
+  // 音乐侧边栏
+  if (type === 'drawerList') {
+    menu.push({
+      label: '从播放列表删除',
+      value: 'removePlayList'
+    })
+  }
+
+  // 我的歌单
+  if (props.listInfo?.userId === userStore.userInfo?.account.id) {
+    menu.push({
+      label: '从歌单删除',
+      value: 'removeMyList'
+    })
+  }
+
+  return menu
+}
+
 
 </script>
 
@@ -247,7 +300,7 @@ const playHandler = (item: GetMusicDetailData) => {
 
         .title-info {
           .active {
-            color: rgb(255,60,60)!important;
+            color: rgb(255, 60, 60) !important;
           }
 
           .title-name {

@@ -15,6 +15,10 @@ export const useMusicStore = defineStore('my-music', () => {
   const clearCurrentItem = () => {
     currentItem.value = null
   }
+
+  // 播放状态
+  const isPlay = ref(false)
+
   // 用户当前正在播放音乐的列表状态
   // 0心动 1列表循环 2随机播放 3单曲循环
   const orderStatusVal = ref<0 | 1 | 2 | 3>(1)
@@ -237,6 +241,7 @@ export const useMusicStore = defineStore('my-music', () => {
     cutSongHandler,
     currentIndex,
     drawerShow,
+    isPlay
   }
 
 }, {

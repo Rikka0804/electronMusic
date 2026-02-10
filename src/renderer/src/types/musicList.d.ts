@@ -74,6 +74,8 @@ export interface GetMusicDetailData {
   name: string
   dt: number
   id: number
+  // 音乐类型 0: 普通音乐 1，2 网盘音乐
+  t: 0 | 1 | 2
   pop: number
   album: string
   _duration?: string

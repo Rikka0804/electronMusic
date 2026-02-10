@@ -33,3 +33,5 @@ export const getDynamicCoverApi = (id: number) =>
 // 获取智能推荐列表
 export const getIntelligenceListApi = (pid: number, id: number, sid: number) =>
   request<GetIntelliganceListRes>('/playmode/intelligence/list', 'get', { pid, id, sid })
+
+

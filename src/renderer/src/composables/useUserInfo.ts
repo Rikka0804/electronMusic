@@ -2,22 +2,21 @@ import { usePlayList } from '@/composables/usePlayList';
 import { useUserStore } from '@/store';
 import { getUserInfoApi, getUserDetailApi } from '@/api/user'
 import type { PlayList } from '@/types/musicList'
-import { reactive } from 'vue';
-import { asideFontSize ,asideMenuConfig} from '@/views/layout/components/asideConfig'
+import { asideFontSize, asideMenuConfig } from '@/views/layout/components/asideConfig'
 export function useUserInfo() {
   const userStore = useUserStore()
   const { getUserLikeList, getUserPlayList } = usePlayList()
   const getUserInfoFn = async () => {
     const res = await getUserInfoApi()
     const { level, createDays } = await getUserDetailApi(res.account.id)
-
-    await updatePlayList()
-
-    await getUserLikeList()
     res.profile.level = level
     res.profile.createDays = createDays
 
     userStore.setUser(res)
+    await updatePlayList()
+
+    await getUserLikeList()
+
   }
   const updatePlayList = async () => {
     const { playlist } = await getUserPlayList()

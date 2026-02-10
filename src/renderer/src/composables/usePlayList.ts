@@ -24,6 +24,7 @@ export function usePlayList() {
     listInfo: {} as PlayList
   })
 
+  // 获取歌单详情
   const getPlayListDetail = async (id: number) => {
     playListState.listLoading = true
     playListState.InfoLoading = true
@@ -44,11 +45,14 @@ export function usePlayList() {
     }
   }
 
+  // 获取用户喜欢的音乐列表id
   const getUserLikeList = async () => {
     const uid = userStore.userInfo?.profile.userId as number
     const { ids } = await getUserLikeListApi(uid)
     userStore.setUserLikeIds(ids)
   }
+
+  // 获取用户播放列表
   const getUserPlayList = async () => {
     const uid = userStore.userInfo?.profile.userId as number
     const res = await getUserPlayListApi(uid)

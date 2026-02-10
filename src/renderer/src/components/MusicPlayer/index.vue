@@ -20,7 +20,7 @@ import DetailRight from './DetailRight.vue'
 import ProgressBar from './ProgressBar.vue'
 import { useMusicStore, useUserStore } from '@/store'
 import { usePlayList } from '@/composables/usePlayList';
-import { ref, UnwrapRef, onMounted, reactive } from 'vue'
+import { ref, UnwrapRef, onMounted, reactive ,watch} from 'vue'
 
 // 重写auido的暂停和播放
 export type userAudio = {
@@ -47,6 +47,10 @@ interface Props {
 const props = defineProps<Props>()
 // 播放状态
 const isPlay = ref(false)
+// 监听播放状态变化
+watch(() => isPlay.value, (newVal) => {
+  musicStore.isPlay = newVal
+})
 // 播放器实例
 const audio = ref<userAudio>()
 // 播放器原始播放和暂停

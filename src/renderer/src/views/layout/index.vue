@@ -26,9 +26,9 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, provide } from 'vue'
 import { useMusicStore } from '@/store';
-
+import { useContextMenu } from '@/composables/useContextMenu';
 import BaseAside from './components/BaseAside.vue'
 import BaseHeader from './components/BaseHeader.vue';
 import BaseButtom from './components/BaseButtom.vue';
@@ -39,6 +39,14 @@ import MusicDrawer from './components/MusicDrawer.vue'
 const audioInstance = ref<MusicPlayerInstanceType>()
 
 const musicStore = useMusicStore()
+
+// 全局上下文菜单
+const { MENU_kEY, setActiveMenu, activeMenu } = useContextMenu()
+provide(MENU_kEY, {
+  setActiveMenu,
+  activeMenu
+})
+
 
 const refresh = ref(0) // 登录完成后强制刷新组件
 onMounted(async () => {

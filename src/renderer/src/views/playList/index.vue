@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <ListInfo :loading="playListState.InfoLoading" @playAll="playAllHandler" :listInfo="playListState.listInfo" />
-    <MusicList v-if="!playListState.InfoLoading" :loading="playListState.listLoading" :columns="columns" :list="playListState.playList" @play="handlePlay"
+    <MusicList v-if="!playListState.InfoLoading" :loading="playListState.listLoading" :columns="columns" :list="playListState.playList" :listInfo="playListState.listInfo" @play="handlePlay"
       @updateRuntimeList="handleUpdateRuntimeList" />
   </div>
 </template>

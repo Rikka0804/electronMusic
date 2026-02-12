@@ -12,8 +12,10 @@
         </div>
       </div>
       <div class="list-container">
-        <ContextMenu v-for="(value, index) in chunkList" :key="value.id" :items="getContextMenuList(props.type, value)">
-          <div class="musciList-item" @dblclick="playHandler(value)" @click="currentId = value.id">
+        <ContextMenu v-for="(value, index) in chunkList" :key="value.id" :items="getContextMenuList(props.type, value)"
+          @select="(item) => handleContextMenuSelect(item, value)">
+          <div class="musciList-item" @dblclick="playHandler(value)" @click="currentId = value.id"
+            @contextmenu="currentId = value.id">
             <div class="item-container flex text-[14px] h-[70px] items-center justify-around"
               :class="{ 'active': currentId === value.id }">
               <div v-for="config in normalizedColumns" :key="config.type" :class="config.class" :style="config._style">
@@ -66,7 +68,7 @@
 import { ref, computed, watch } from 'vue'
 import { formattingTime } from '@/utils/utils'
 import { type Columns } from '../musciList'
-import { GetMusicDetailData ,PlayList} from '@/types/musicList'
+import { GetMusicDetailData, PlayList } from '@/types/musicList'
 import { useUserStore } from '@/store'
 import { useMusicStore } from '@/store'
 import ContextMenu from '@/components/ContextMenu/index.vue'
@@ -115,6 +117,8 @@ const renderChunked = (fullList: GetMusicDetailData[]) => {
 }
 
 watch(() => props.list, (val) => {
+
+
   mylist.value = val.map(item => ({
     ...item,
     _duration: formattingTime(item.dt),
@@ -181,7 +185,7 @@ const getContextMenuList = (type: 'playList' | 'drawerList', item: GetMusicDetai
   // 根据id判断是否是当前播放的音乐，根据播放状态判断是暂停还是播放，播放需特殊处理
   menu.push({
     label: item.id === musicStore.songs?.id && musicStore.isPlay ? '暂停' : '播放',
-    value: item.id === musicStore.songs?.id && musicStore.isPlay ? 'pause' : 'play',
+    value: 'play',
   })
 
   // 如果不是当前播放的音乐，添加下一首播放按钮
@@ -218,6 +222,57 @@ const getContextMenuList = (type: 'playList' | 'drawerList', item: GetMusicDetai
 
   return menu
 }
+// 右键菜单点击事件
+const handleContextMenuSelect = (item: MenuItem, value: GetMusicDetailData) => {
+
+
+
+  switch (item.value) {
+    case 'play':
+      const tracks = musicStore.runtimeList?.tracks
+      if (!tracks) return
+
+      const index = tracks.findIndex(i => i.id === value.id)
+      const currentIndex = musicStore.currentIndex
+      if (index === currentIndex) {
+        window.$audio.togglePlay()
+      }
+      else if (index >= 0) {
+        if (index < currentIndex) {
+          tracks.splice(index, 1)
+          tracks.splice(currentIndex, 0, value)
+          musicStore.getMusicUrlHandler(value)
+        } else {
+          tracks.splice(index, 1)
+          tracks.splice(currentIndex + 1, 0, value)
+          musicStore.getMusicUrlHandler(value, currentIndex + 1)
+        }
+      } else {
+        tracks.splice(currentIndex + 1, 0, value)
+        musicStore.getMusicUrlHandler(value, currentIndex + 1)
+      }
+
+
+
+      break
+    case 'pause':
+      window.$audio.togglePlay()
+      break
+    case 'nextPlay':
+
+      break
+    case 'comment':
+
+      break
+    case 'removePlayList':
+
+      break
+    case 'removeMyList':
+
+      break
+  }
+}
+
 
 
 </script>

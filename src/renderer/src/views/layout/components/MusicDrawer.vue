@@ -31,7 +31,7 @@ import { drawerColumns } from '@/views/playList/musciList';
 const musicStore = useMusicStore()
 const runtimeTracks = computed(() => {
   return Array.isArray(musicStore.runtimeList?.tracks)
-    ? musicStore.runtimeList.tracks
+    ? [...musicStore.runtimeList.tracks]
     : []
 })
 

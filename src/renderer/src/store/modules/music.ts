@@ -50,6 +50,7 @@ export const useMusicStore = defineStore('my-music', () => {
   const clearRuntimeList = async () => {
     runtimeList.value = null
     await window.$audio.pause(false)
+    songs.value = undefined
     musicUrl.value = ''
   }
 

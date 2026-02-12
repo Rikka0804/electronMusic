@@ -4,7 +4,7 @@
   </div>
   <Teleport to="body">
     <div class="context-menu  z-[9999] fixed" :style="{ left: `${x}px`, top: `${y}px` }" v-if="visible" ref="menuRef">
-      <div v-for="(item, index) in items" :key="index" class="menu-item">
+      <div v-for="(item, index) in items" :key="index" class="menu-item" @click="(e) => handleClickMenu(item, e)">
         {{ item.label }}
       </div>
 
@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, inject, onMounted, onUnmounted ,Ref } from 'vue'
+import { ref, inject, onMounted, onUnmounted, Ref, nextTick } from 'vue'
 import { useContextMenu, ContextMenuType } from '@/composables/useContextMenu'
 
 interface MenuItem {
@@ -37,16 +37,17 @@ const menuId = ref(Symbol('menu-id'))
 const x = ref(0)
 const y = ref(0)
 const visible = ref(false)
+const GAP = 6  // 菜单与鼠标之间的间距
 
-const showMenu = (e) => {
+const showMenu = async (e) => {
   e.preventDefault()
   if (menuManager?.activeMenu.value?.id === menuId.value) {
     menuManager.setActiveMenu(null)
 
 
   }
-  x.value = e.clientX
-  y.value = e.clientY
+  x.value = e.clientX + GAP
+  y.value = e.clientY + GAP
   visible.value = true
 
 
@@ -54,6 +55,30 @@ const showMenu = (e) => {
     id: menuId.value,
     hideMenu
   })
+
+
+  // 防止菜单超出窗口
+  await nextTick()
+
+  const menuEl = menuRef.value
+  if (!menuEl) return
+
+  const { innerWidth, innerHeight } = window
+  const rect = menuEl.getBoundingClientRect()
+
+
+  if (rect.right > innerWidth) {
+    x.value = e.clientX - rect.width - GAP
+  }
+
+
+  if (rect.bottom > innerHeight) {
+    y.value = e.clientY - rect.height - GAP
+  }
+
+
+  x.value = Math.max(GAP, x.value)
+  y.value = Math.max(GAP, y.value)
 
 }
 const hideMenu = () => {
@@ -76,6 +101,19 @@ onUnmounted(() => {
     menuManager.setActiveMenu(null)
   }
 })
+
+interface Emits {
+  (e: 'select' ,item: MenuItem): void
+
+}
+const emit = defineEmits<Emits>()
+
+const handleClickMenu = (item: MenuItem,e) => {
+  emit('select', item)
+  hideMenu()
+  e.stopPropagation()
+}
+
 
 
 </script>

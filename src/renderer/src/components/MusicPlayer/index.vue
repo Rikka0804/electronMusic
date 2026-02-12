@@ -20,7 +20,10 @@ import DetailRight from './DetailRight.vue'
 import ProgressBar from './ProgressBar.vue'
 import { useMusicStore, useUserStore } from '@/store'
 import { usePlayList } from '@/composables/usePlayList';
-import { ref, UnwrapRef, onMounted, reactive ,watch} from 'vue'
+import { ref, UnwrapRef, onMounted, reactive } from 'vue'
+import { storeToRefs } from 'pinia'
+
+
 
 // 重写auido的暂停和播放
 export type userAudio = {
@@ -45,12 +48,10 @@ interface Props {
   songs?: GetMusicDetailData
 }
 const props = defineProps<Props>()
+const musicStore = useMusicStore()
 // 播放状态
-const isPlay = ref(false)
-// 监听播放状态变化
-watch(() => isPlay.value, (newVal) => {
-  musicStore.isPlay = newVal
-})
+const { isPlay } = storeToRefs(musicStore)
+
 // 播放器实例
 const audio = ref<userAudio>()
 // 播放器原始播放和暂停
@@ -65,7 +66,7 @@ onMounted(() => {
 
 })
 const userStore = useUserStore()
-const musicStore = useMusicStore()
+
 const play = () => {
   let volume = userStore.volume
   audio.value!.volume = 0

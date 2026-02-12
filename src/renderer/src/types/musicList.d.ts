@@ -54,7 +54,7 @@ export type CurrentItem = GetPlayListDetailRes['playlist']
 export interface RuntimeList extends PlayList {
   tracks: GetMusicDetailData[]
 }
-
+export type RuntimeListOptional = Partial<RuntimeList>
 // 歌曲详情
 export interface GetMusicDetailData {
   al: {
@@ -121,8 +121,8 @@ interface GetLyricRes {
   } | null
 }
 
-export interface Lyric  { time: number | boolean; text: string; line?: number }
-export interface Yrc  {
+export interface Lyric { time: number | boolean; text: string; line?: number }
+export interface Yrc {
   time: number
   duration: number
   line?: number

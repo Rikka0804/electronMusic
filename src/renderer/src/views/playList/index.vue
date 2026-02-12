@@ -40,6 +40,8 @@ const handleUpdateRuntimeList = () => {
 
 // 播放全部
 const playAllHandler = () => {
+
+
   // 点击播放全部时，判断当前播放列表是否为当前播放列表
   if (musicStore.runtimeList?.id === playListState.listInfo.id) {
     return

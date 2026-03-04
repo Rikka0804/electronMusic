@@ -117,8 +117,6 @@ const renderChunked = (fullList: GetMusicDetailData[]) => {
 }
 
 watch(() => props.list, (val) => {
-
-
   mylist.value = val.map(item => ({
     ...item,
     _duration: formattingTime(item.dt),
@@ -129,7 +127,7 @@ watch(() => props.list, (val) => {
     ].join(' ') //预处理搜索关键词
   }))
   renderChunked(mylist.value)
-}, { immediate: true })
+}, { immediate: true, deep: true })
 
 watch(() => searchKey.value, (val) => {
   const key = val.trim().toLowerCase()
@@ -225,46 +223,85 @@ const getContextMenuList = (type: 'playList' | 'drawerList', item: GetMusicDetai
 // 右键菜单点击事件
 const handleContextMenuSelect = (item: MenuItem, value: GetMusicDetailData) => {
 
+  if (!musicStore.runtimeList) {
+    musicStore.runtimeList = { tracks: [] }
+  }
 
+  const tracks = musicStore.runtimeList.tracks!
+  const currentIndex = musicStore.currentIndex
+  const index = tracks.findIndex(i => i.id === value.id)
+  const insertNextToCurrent = () => {
+    const insertIndex = currentIndex + 1
+    tracks.splice(insertIndex, 0, value)
+    return insertIndex
+  }
+  const removeFromList = (removeIndex: number) => {
+    tracks.splice(removeIndex, 1)
+    if (removeIndex < currentIndex) {
+      musicStore.currentIndex--
+    }
+  }
 
   switch (item.value) {
     case 'play':
-      const tracks = musicStore.runtimeList?.tracks
-      if (!tracks) return
 
-      const index = tracks.findIndex(i => i.id === value.id)
-      const currentIndex = musicStore.currentIndex
       if (index === currentIndex) {
         window.$audio.togglePlay()
+        return
       }
-      else if (index >= 0) {
-        if (index < currentIndex) {
-          tracks.splice(index, 1)
-          tracks.splice(currentIndex, 0, value)
-          musicStore.getMusicUrlHandler(value)
-        } else {
-          tracks.splice(index, 1)
-          tracks.splice(currentIndex + 1, 0, value)
-          musicStore.getMusicUrlHandler(value, currentIndex + 1)
-        }
+
+      // 如果已经在列表中，先移除
+      if (index >= 0) {
+        removeFromList(index)
+      }
+
+      // 插入到当前播放后
+      let newIndex: number
+
+      if (tracks.length === 0) {
+        tracks.push(value)
+        newIndex = 0
       } else {
-        tracks.splice(currentIndex + 1, 0, value)
-        musicStore.getMusicUrlHandler(value, currentIndex + 1)
+        newIndex = insertNextToCurrent()
       }
-
-
-
+      musicStore.getMusicUrlHandler(value, newIndex)
       break
     case 'pause':
       window.$audio.togglePlay()
       break
     case 'nextPlay':
+      if (index == currentIndex + 1 && currentIndex !== -1) return
+      if (index >= 0) {
+        removeFromList(index)
+      }
+      if (tracks.length === 0) {
+        tracks.push(value)
+        musicStore.getMusicUrlHandler(value, 0)
+      } else {
+        insertNextToCurrent()
+      }
+
 
       break
     case 'comment':
 
       break
     case 'removePlayList':
+      if (index < 0) return
+
+      tracks.splice(index, 1)
+
+      if (tracks.length === 0) {
+        musicStore.clearRuntimeList()
+        return
+      }
+
+      if (index === currentIndex) {
+        musicStore.cutSongHandler(true)
+      } else if (index < currentIndex) {
+        musicStore.currentIndex--
+      }
+
 
       break
     case 'removeMyList':

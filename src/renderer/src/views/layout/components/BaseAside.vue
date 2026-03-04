@@ -68,14 +68,14 @@ import LoginBox from './LoginBox.vue'
 import { useUserStore } from '@/store';
 import { ref, nextTick, watch, reactive, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router';
-import { storeToRefs } from 'pinia'
+
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 
-const { asideMenu } = storeToRefs(userStore)
+// const { asideMenu } = storeToRefs(userStore)
 const asideMenuConfig = computed(() => {
-  return {...asideMenu.value}
+  return userStore.asideMenu
 })
 const loginVis = ref(false)
 const loginBoxRef = ref()

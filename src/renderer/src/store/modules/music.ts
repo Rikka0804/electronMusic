@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref, nextTick, watch } from 'vue'
-import { GetMusicDetailData, CurrentItem, RuntimeList, Lyric, Yrc } from '@/types/musicList'
+import { ref, nextTick, watch, toRaw } from 'vue'
+import { GetMusicDetailData, CurrentItem, RuntimeList, Lyric, Yrc ,RuntimeListOptional } from '@/types/musicList'
 import { getLyricApi, getDynamicCoverApi, getMusicUrlApi, getIntelligenceListApi } from '@/api/musicLits'
 import { parseLrc, parseYrc } from '@lrc-player/parse'
 import { randomNum } from '@/utils/utils'
@@ -29,7 +29,7 @@ export const useMusicStore = defineStore('my-music', () => {
 
 
   // 用户当前正在播放音乐的列表
-  const runtimeList = ref<RuntimeList | null>(null)
+  const runtimeList = ref<RuntimeListOptional | null>(null)
   // 用户当前正在播放音乐的列表ids
   const runtimeIds = ref<number[]>([])
   const updateRuntimeList = (val: RuntimeList, ids: number[]) => {
@@ -37,8 +37,14 @@ export const useMusicStore = defineStore('my-music', () => {
     if (val.specialType !== 5 && orderStatusVal.value === 0) {
       orderStatusVal.value = 1
     }
-    runtimeList.value = val
-    runtimeIds.value = ids
+    runtimeList.value = {
+      ...val,
+      tracks: val.tracks.map(track => ({
+        ...toRaw(track)
+      }))
+    }
+
+    runtimeIds.value = [...ids]
   }
   const updateTracks = (tracks: GetMusicDetailData[], ids: number[]) => {
     if (runtimeList.value) {
@@ -119,7 +125,7 @@ export const useMusicStore = defineStore('my-music', () => {
     if (!runtimeList.value || !songs.value?.id) {
       return
     }
-    const { data } = await getIntelligenceListApi(runtimeList.value.id, songs.value?.id, songs.value?.id)
+    const { data } = await getIntelligenceListApi(runtimeList.value.id!, songs.value?.id, songs.value?.id)
 
     const tracks = data
       .filter((item) => !!item.songInfo)
@@ -153,7 +159,7 @@ export const useMusicStore = defineStore('my-music', () => {
     if (currentIndex.value > runtimeIds.value.length - 1) {
       return
     }
-    getMusicUrlHandler(runtimeList.value!.tracks[currentIndex.value])
+    getMusicUrlHandler(runtimeList.value!.tracks![currentIndex.value])
   }
   // 切换歌曲
   const cutSongHandler = (target: boolean) => {
@@ -164,13 +170,13 @@ export const useMusicStore = defineStore('my-music', () => {
       } else if (currentIndex.value < 0) {
         currentIndex.value = runtimeIds.value.length - 1
       }
-      getMusicUrlHandler(runtimeList.value!.tracks[currentIndex.value])
+      getMusicUrlHandler(runtimeList.value!.tracks![currentIndex.value])
       return
     }
     if (!target) {
       const i =
         lastIndexList.value[lastIndexList.value.length - 1] || orderTarget(orderStatusVal.value)
-      getMusicUrlHandler(runtimeList.value!.tracks[i])
+      getMusicUrlHandler(runtimeList.value!.tracks![i])
       lastIndexList.value.splice(runtimeIds.value!.length - 1)
       return
     }
@@ -183,7 +189,7 @@ export const useMusicStore = defineStore('my-music', () => {
       return currentIndex.value = 0
     }
     // 心动切其他时，重头播放该歌单
-    await getMusicUrlHandler(runtimeList.value!.tracks[0], 0)
+    await getMusicUrlHandler(runtimeList.value!.tracks![0], 0)
   }
   // 获取歌词
   const lrcMode = ref<0 | 1>(0) // 0 逐行 1 逐字

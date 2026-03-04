@@ -37,9 +37,7 @@ const getDefaultSearch = async () => {
   const { data } = await getDefaultSearchApi()
   placeholderInfo.value.realkeyword = data.realkeyword
   placeholderInfo.value.showKeyword = data.showKeyword
-  setTimeout(() => {
-    getDefaultSearch()
-  }, 15000)
+
 }
 getDefaultSearch()
 

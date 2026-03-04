@@ -34,6 +34,8 @@ watch(
 const musicStore = useMusicStore()
 
 const handleUpdateRuntimeList = () => {
+  console.log(playListState.playList.length);
+
   musicStore.updateRuntimeList({ tracks: playListState.playList, ...playListState.listInfo }, playListState.ids);
   musicStore.orderStatusVal = 1
 }
@@ -41,11 +43,10 @@ const handleUpdateRuntimeList = () => {
 // 播放全部
 const playAllHandler = () => {
 
-
   // 点击播放全部时，判断当前播放列表是否为当前播放列表
-  if (musicStore.runtimeList?.id === playListState.listInfo.id) {
-    return
-  }
+  // if (musicStore.runtimeList?.id === playListState.listInfo.id) {
+  //   return
+  // }
   handleUpdateRuntimeList()
   musicStore.initPlay()
 

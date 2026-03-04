@@ -29,11 +29,10 @@ import MusicList from '@/views/playList/components/MusicList.vue';
 import { drawerColumns } from '@/views/playList/musciList';
 
 const musicStore = useMusicStore()
-const runtimeTracks = computed(() => {
-  return Array.isArray(musicStore.runtimeList?.tracks)
-    ? [...musicStore.runtimeList.tracks]
-    : []
-})
+const runtimeTracks = computed(() => Array.isArray(musicStore.runtimeList?.tracks)
+  ? musicStore.runtimeList?.tracks
+  : [] )
+
 
 const drawer = computed({
   get() {

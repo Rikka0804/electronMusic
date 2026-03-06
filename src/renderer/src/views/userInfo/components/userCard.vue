@@ -1,5 +1,5 @@
 <template>
-  <div class="userCard flex  w-[87vw-180px]" v-loading="loading">
+  <div class="userCard flex  w-[87vw-180px]" v-loading="loading" element-loading-background="transparent">
     <div class="userAvator">
       <el-avatar :size="180" :src="props.userInfo?.avatarUrl" />
     </div>
@@ -33,11 +33,11 @@
 import { province, city } from 'province-city-china/data'
 import {computed} from 'vue'
 import {Profile} from '@/types/user'
-interface props {
+interface Props {
   userInfo: Profile | undefined,
   loading: boolean,
 }
-const props = defineProps<props>()
+const props = defineProps<Props>()
 const provinceName = computed(() => {
   return province.find(item => item.code == props.userInfo?.province)?.name
 })

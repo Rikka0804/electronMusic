@@ -61,7 +61,7 @@
 
     </div>
   </div>
-  <div v-else v-loading="props.loading" class="h-[80px]"></div>
+  <div v-else v-loading="props.loading" class="h-[80px]" element-loading-background="transparent"></div>
 </template>
 
 <script setup lang="ts">
@@ -69,8 +69,7 @@ import { ref, computed, watch } from 'vue'
 import { formattingTime } from '@/utils/utils'
 import { type Columns } from '../musciList'
 import { GetMusicDetailData, PlayList } from '@/types/musicList'
-import { useUserStore } from '@/store'
-import { useMusicStore } from '@/store'
+import { useUserStore , useMusicStore} from '@/store'
 import ContextMenu from '@/components/ContextMenu/index.vue'
 interface Props {
   columns: Columns[],
@@ -224,7 +223,7 @@ const getContextMenuList = (type: 'playList' | 'drawerList', item: GetMusicDetai
 const handleContextMenuSelect = (item: MenuItem, value: GetMusicDetailData) => {
 
   if (!musicStore.runtimeList) {
-    musicStore.runtimeList = { tracks: [] }
+    musicStore.runtimeList = { id: 0, tracks: [] }
   }
 
   const tracks = musicStore.runtimeList.tracks!

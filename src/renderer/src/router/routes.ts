@@ -40,6 +40,11 @@ export const AppRoutes = [
         path:'/playList',
         name:'歌单',
         component:()=>import('@/views/playList/index.vue')
+      },
+       {
+        path:'/recommendPlayList',
+        name:'推荐歌单',
+        component:()=>import('@/views/home/recommendMusicList.vue')
       }
 
     ]

@@ -12,11 +12,12 @@ export interface Recommend {
   id: number
   name: string
   picUrl: string
-  playcount: number
+  playCount: number
   trackCount: number
   type: number
   userId: number
 }
+export type partialRecommend = Partial<Recommend>
 export interface RecommendSongListRes {
   code: number
   featureFirst: boolean

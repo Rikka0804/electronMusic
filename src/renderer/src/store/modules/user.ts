@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 import type { getUserAccountRes } from '@/types/user'
-import { GetUserPlayListRes } from '@/types/musicList'
+import { GetUserPlayListRes, GetMusicDetailData } from '@/types/musicList'
 import { asideMenuConfig } from '@/views/layout/components/asideConfig'
+import { Recommend } from '@/types/home'
 export const useUserStore = defineStore(
   'my-user',
   () => {
@@ -30,7 +31,7 @@ export const useUserStore = defineStore(
     }
 
     //当前播放器的音量
-    const volume = ref<number>( 0.5)
+    const volume = ref<number>(0.5)
 
     //侧边栏
     const asideMenu = ref([...asideMenuConfig])
@@ -38,7 +39,20 @@ export const useUserStore = defineStore(
       asideMenu.value = val
     }
 
-    return { userInfo, setUser, cookie, setCookie, isLogin, userLikeIds, setUserLikeIds, volume, userPlayList, setUserPlayList, asideMenu, setAsideMenu }
+    // 推荐歌单
+    const recommendPlayList = ref<Recommend[]>([])
+
+    // 每日推荐歌单
+    const dailyRecommendPlayList = ref<GetMusicDetailData[]>([])
+
+    // 推荐更新时间
+    const recommendUpdateTime = ref<number>(0)
+
+
+
+
+
+    return { userInfo, setUser, cookie, setCookie, isLogin, userLikeIds, setUserLikeIds, volume, userPlayList, setUserPlayList, asideMenu, setAsideMenu, recommendPlayList, dailyRecommendPlayList, recommendUpdateTime }
   },
   {
     persist: true

@@ -1,6 +1,6 @@
 import { request } from '@/utils/request'
-import { GetUserPlayListRes, GetPlayListDetailRes, GetMusicDetailRes, GetMusicUrlRes, GetLyricRes ,GetIntelliganceListRes} from '@/types/musicList'
-
+import { GetUserPlayListRes, GetPlayListDetailRes, GetMusicDetailRes, GetMusicUrlRes, GetLyricRes ,GetIntelliganceListRes ,GetMusicDetailData} from '@/types/musicList'
+import {Recommend} from "@/types/home"
 // 获取用户歌单信息
 export const getUserPlayListApi = (uid: number) =>
   request<GetUserPlayListRes>('/user/playlist', 'get', { uid })
@@ -34,4 +34,10 @@ export const getDynamicCoverApi = (id: number) =>
 export const getIntelligenceListApi = (pid: number, id: number, sid: number) =>
   request<GetIntelliganceListRes>('/playmode/intelligence/list', 'get', { pid, id, sid })
 
+// 获取每日推荐音乐
+export const getRecommendSongsApi = () =>
+  request<{data:{dailySongs:GetMusicDetailData[]}}>('/recommend/songs', 'get')
 
+
+// 获取推荐歌单
+export const getPersonalizedApi = () => request<{result:Recommend[]}>('/personalized', 'get')

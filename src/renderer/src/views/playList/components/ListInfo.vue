@@ -55,7 +55,7 @@
     </div>
 
   </div>
-  <div class=" h-[180px]" v-else v-loading="props.loading">
+  <div class=" h-[180px]" v-else v-loading="props.loading" element-loading-background="transparent">
   </div>
 
 

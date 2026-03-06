@@ -11,7 +11,7 @@
       :class="{ visible: keywords }" @click="keywords = ''">
       <CircleCloseFilled />
     </el-icon>
-    <div class="suggest" v-show="showSuggest" v-loading="loading">
+    <div class="suggest" v-show="showSuggest" v-loading="loading" element-loading-background="transparent">
       <list :list="state.list" :model="model" :keywordsList="state.keywordsList" />
     </div>
   </div>
@@ -138,9 +138,7 @@ const showSuggest = ref(false)
     overflow: auto;
 
     //backdrop-filter: blur(60px) saturate(210%);
-    .el-loading-mask {
-      background: transparent;
-    }
+
   }
 }
 </style>

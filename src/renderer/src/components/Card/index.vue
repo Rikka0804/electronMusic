@@ -44,7 +44,7 @@ const props = defineProps<Props>()
       opacity: 0.8;
     }
 
-    box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 15px 5px rgba(0, 0, 0, 0.5);
   }
 
   .card {

@@ -7,7 +7,7 @@ import { randomNum } from '@/utils/utils'
 
 export const useMusicStore = defineStore('my-music', () => {
   // 用户当前选中的歌单列表，会随着用户选中的菜单变化
-  const currentItem = ref<CurrentItem | null>(null)
+  const currentItem = ref<RuntimeListOptional | null>(null)
   const updateCurrentItem = (val: CurrentItem) => {
     val.name = val.specialType === 5 ? '我喜欢的歌单' : val.name
     currentItem.value = val
@@ -32,14 +32,14 @@ export const useMusicStore = defineStore('my-music', () => {
   const runtimeList = ref<RuntimeListOptional | null>(null)
   // 用户当前正在播放音乐的列表ids
   const runtimeIds = ref<number[]>([])
-  const updateRuntimeList = (val: RuntimeList, ids: number[]) => {
+  const updateRuntimeList = (val: RuntimeListOptional, ids: number[]) => {
     // 非心动列表 切换到列表循环模式
     if (val.specialType !== 5 && orderStatusVal.value === 0) {
       orderStatusVal.value = 1
     }
     runtimeList.value = {
       ...val,
-      tracks: val.tracks.map(track => ({
+      tracks: val.tracks!.map(track => ({
         ...toRaw(track)
       }))
     }

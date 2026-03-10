@@ -49,12 +49,12 @@
 
 <script setup lang="ts">
 import type { searchSongItem, searchSongAllMatchItem } from '@/types/search'
-interface props {
+interface Props {
   list: searchSongItem[],
   keywordsList: searchSongAllMatchItem[],
   model: 'hot' | 'keywords'
 }
-const props = defineProps<props>()
+const props = defineProps<Props>()
 
 </script>
 

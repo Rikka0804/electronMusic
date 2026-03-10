@@ -45,6 +45,11 @@ export const AppRoutes = [
         path:'/recommendPlayList',
         name:'推荐歌单',
         component:()=>import('@/views/home/recommendMusicList.vue')
+      },
+      {
+        path:'/search',
+        name:'搜索',
+        component:()=>import('@/views/search/index.vue')
       }
 
     ]

@@ -6,7 +6,7 @@
     <input
       class="search-input bg-transparent w-[230px] h-[37px] pl-[10px] outline-none border-none font-size-[14px] text-white placeholder:text-white/50"
       type="text" :placeholder="placeholderInfo.showKeyword" v-model.trim="keywords" @focus="focusHandler"
-      @blur="blurHandler" />
+      @blur="blurHandler" @keyup.enter="handleSearch('enter')" />
     <el-icon class="clean-icon cursor-pointer" size="18px" color="rgba(255, 255, 255, 0.5)"
       :class="{ visible: keywords }" @click="keywords = ''">
       <CircleCloseFilled />
@@ -23,6 +23,7 @@ import list from './list.vue';
 import { getDefaultSearchApi, getHotSearchApi, getSearchSuggestApi } from '@/api/search'
 import type { searchSongItem, searchSongAllMatchItem } from '@/types/search'
 import { ref, reactive, watch } from 'vue'
+import { useRouter } from 'vue-router'
 // 搜索关键词
 const keywords = ref('')
 
@@ -49,14 +50,14 @@ const blurHandler = () => {
 }
 
 // 高亮元素
-const hightLight = (obj:searchSongAllMatchItem[])=>{
+const hightLight = (obj: searchSongAllMatchItem[]) => {
   const regExp = new RegExp(keywords.value, 'ig')
-  obj.forEach(item =>{
+  obj.forEach(item => {
     item.text = item.keyword.replace(regExp, (match) => {
       return `<span style="color:lightskyblue">${match}</span>`
     })
   })
-  }
+}
 
 
 
@@ -70,7 +71,7 @@ watch(keywords, (newVal) => {
 
     timer = setTimeout(async () => {
       loading.value = true
-      const { result:{allMatch} } = await getSearchSuggestApi(keywords.value, 'mobile')
+      const { result: { allMatch } } = await getSearchSuggestApi(keywords.value, 'mobile')
       loading.value = false
       hightLight(allMatch)
       state.keywordsList = allMatch
@@ -100,6 +101,22 @@ const getHotSearch = async () => {
 }
 getHotSearch()
 const showSuggest = ref(false)
+
+// 搜索
+const router = useRouter()
+const handleSearch = (type: 'enter' | 'click', selectKeywords?: string) => {
+  showSuggest.value = false
+  if (type === 'enter') {
+    router.push({
+      path: '/search',
+      query: {
+        keywords: keywords.value || placeholderInfo.value.showKeyword
+      }
+    })
+  }
+
+}
+
 
 
 </script>

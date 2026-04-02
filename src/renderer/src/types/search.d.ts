@@ -6,6 +6,13 @@ export interface getDefaultSearchRes {
     showKeyword: string // 显示关键字
   }
 }
+// 搜索所需字段
+export interface searchObj {
+  keywords: string,
+  type: 1 | 100 | 1000,
+  limit?: number,
+  offset?: number,
+}
 
 // 搜索歌曲项
 export interface searchSongItem {

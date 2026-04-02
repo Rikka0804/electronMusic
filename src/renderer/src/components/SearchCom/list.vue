@@ -6,7 +6,7 @@
           热搜
         </div>
         <div class="hot-list-item flex items-center cursor-pointer h-[60px]" v-for="(item, index) in props.list"
-          :key="index">
+          :key="index" @mousedown.prevent="handleSearch(item.searchWord)">
           <div class="item-index mr-[20px]" :class="{ 'top3': index < 3 }">
             {{ index + 1 }}
           </div>
@@ -27,16 +27,16 @@
     <template v-else>
       <div class="keyWords-list">
         <div class="keyWords-item flex items-center cursor-pointer h-[60px]" v-for="(item, index) in props.keywordsList"
-          :key="index">
+          :key="index" @mousedown.prevent="handleSearch(item.keyword)">
           <el-icon size="14px" class="mr-[5px]">
             <Search />
           </el-icon>
           <span class="font-[600] text-[14px] mr-[10px]" v-html="item.text">
 
           </span>
-         <span style="color:red; " class="text-[14px]" v-if="item.alg.includes('Like') ">
-          ❤
-         </span>
+          <span style="color:red; " class="text-[14px]" v-if="item.alg.includes('Like')">
+            ❤
+          </span>
         </div>
       </div>
 
@@ -55,6 +55,14 @@ interface Props {
   model: 'hot' | 'keywords'
 }
 const props = defineProps<Props>()
+interface Emits {
+  (e: 'select', keywords: string): void
+
+}
+const emit = defineEmits<Emits>()
+const handleSearch = (keywords: string) => {
+  emit('select', keywords)
+}
 
 </script>
 

@@ -12,7 +12,7 @@
       <CircleCloseFilled />
     </el-icon>
     <div class="suggest" v-show="showSuggest" v-loading="loading" element-loading-background="transparent">
-      <list :list="state.list" :model="model" :keywordsList="state.keywordsList" />
+      <list :list="state.list" :model="model" :keywordsList="state.keywordsList" @select="handleSearch('click',$event)"/>
     </div>
   </div>
 
@@ -106,15 +106,18 @@ const showSuggest = ref(false)
 const router = useRouter()
 const handleSearch = (type: 'enter' | 'click', selectKeywords?: string) => {
   showSuggest.value = false
-  if (type === 'enter') {
-    router.push({
-      path: '/search',
-      query: {
-        keywords: keywords.value || placeholderInfo.value.showKeyword
-      }
-    })
-  }
+  const targetKeywords = type === 'enter'
+    ? (keywords.value || placeholderInfo.value.showKeyword)
+    : (selectKeywords || keywords.value || placeholderInfo.value.showKeyword)
 
+  keywords.value = targetKeywords
+
+  router.push({
+    path: '/search',
+    query: {
+      keywords: targetKeywords
+    }
+  })
 }
 
 

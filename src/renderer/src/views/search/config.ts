@@ -6,8 +6,8 @@ export const list = [{
   name: 'music',
 },{
   label: '歌单',
-  name: 'musicList'
+  name: 'musicList',
 },{
   label: '歌手',
-  name: 'singer'
+  name: 'singer',
 }]

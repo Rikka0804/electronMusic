@@ -146,4 +146,15 @@ interface GetIntelliganceListRes {
   }[]
 }
 
+export interface searchMusicListRes {
+  result:{
+    playlists: PlayList[]
+  }
+}
+
+export interface searchMusicRes {
+  result:{
+    songs: GetMusicDetailData[]
+  }
+}
 

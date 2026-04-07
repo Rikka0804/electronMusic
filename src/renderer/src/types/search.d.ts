@@ -9,7 +9,7 @@ export interface getDefaultSearchRes {
 // 搜索所需字段
 export interface searchObj {
   keywords: string,
-  type: 1 | 100 | 1000,
+  type: 1 | 100 | 1000, //1: 单曲, 100: 歌手, 1000: 歌单
   limit?: number,
   offset?: number,
 }
@@ -40,4 +40,21 @@ export interface getSearchSongRes {
     allMatch: searchSongAllMatchItem[]
   }
 }
+
+// 歌手项
+export interface searchSingerItem {
+  name: string
+  id: number
+  img1v1Url: string
+  trans: string
+}
+
+// 搜索歌手返回结果
+export interface searchSingerRes {
+  result:{
+    artists: searchSingerItem[]
+  }
+
+}
+
 

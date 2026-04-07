@@ -6,10 +6,10 @@
     <div class="box">
       <BaseAside></BaseAside>
       <div class="content flex-1 min-w-0">
-        <div class="header-wrapper px-[40px]">
+        <div class="header-wrapper shrink-0 px-[40px]">
           <BaseHeader />
         </div>
-        <div class="content-box h-[calc(100%-80px)] overflow-auto overflow-y-auto px-[40px] pb-[80px]">
+        <div ref="contentBoxRef" class="content-box app-scrollbar px-[40px] pb-[96px]">
           <router-view v-slot="{ Component }" >
             <component v-if="!isLoaidng" :is="Component"></component>
           </router-view>
@@ -26,7 +26,8 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, provide } from 'vue'
+import { nextTick, onMounted, provide, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useMusicStore } from '@/store';
 import { useContextMenu } from '@/composables/useContextMenu';
 import BaseAside from './components/BaseAside.vue'
@@ -35,6 +36,8 @@ import BaseButtom from './components/BaseButtom.vue';
 import MusicPlayer, { MusicPlayerInstanceType } from '@/components/MusicPlayer/index.vue'
 import { useUserInfo } from '@/composables/useUserInfo';
 import MusicDrawer from './components/MusicDrawer.vue'
+const contentBoxRef = ref<HTMLDivElement>()
+const route = useRoute()
 
 // 音乐播放器实例
 const audioInstance = ref<MusicPlayerInstanceType>()
@@ -65,19 +68,46 @@ const getUserInfo = async () => {
 
 }
 
+watch(
+  () => route.fullPath,
+  async () => {
+    await nextTick()
+    contentBoxRef.value?.scrollTo({
+      top: 0
+    })
+  }
+)
+
 
 
 </script>
 
 <style scoped lang="scss">
 .layout {
-
   width: 100%;
+  overflow: hidden;
 
   .box {
-    height: calc(100%);
+    height: 100%;
     width: 100%;
     display: flex;
+  }
+
+  .content {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .content-box {
+    flex: 1;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
   }
 }
 

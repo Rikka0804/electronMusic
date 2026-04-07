@@ -14,7 +14,7 @@
         清空
       </div>
     </div>
-    <div class="drawer-list flex-1 overflow-auto">
+    <div class="drawer-list app-scrollbar flex-1 overflow-y-auto overflow-x-hidden">
       <MusicList :columns="drawerColumns" :list="runtimeTracks" :needSearch="false"
         :needTitle="false" type="drawerList" @play="handlePlay" />
     </div>
@@ -87,6 +87,12 @@ const handlePlay = async (item, index) => {
         opacity: 0.8;
       }
 
+    }
+
+    .drawer-list {
+      min-height: 0;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
     }
   }
 }

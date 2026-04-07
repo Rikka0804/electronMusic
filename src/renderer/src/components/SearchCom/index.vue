@@ -11,7 +11,7 @@
       :class="{ visible: keywords }" @click="keywords = ''">
       <CircleCloseFilled />
     </el-icon>
-    <div class="suggest" v-show="showSuggest" v-loading="loading" element-loading-background="transparent">
+    <div class="suggest app-scrollbar" v-show="showSuggest" v-loading="loading" element-loading-background="transparent">
       <list :list="state.list" :model="model" :keywordsList="state.keywordsList" @select="handleSearch('click',$event)"/>
     </div>
   </div>
@@ -156,6 +156,8 @@ const handleSearch = (type: 'enter' | 'click', selectKeywords?: string) => {
     bottom: -2vh;
     z-index: 10;
     overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
 
     //backdrop-filter: blur(60px) saturate(210%);
 

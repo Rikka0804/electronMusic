@@ -1,5 +1,5 @@
 /* 全局滚动条样式 */
-* {
+:where(html, body, #app, .app-scrollbar) {
   // WebKit 浏览器
   &::-webkit-scrollbar {
     width: 6px;   // 垂直滚动条宽度

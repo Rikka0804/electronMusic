@@ -9,7 +9,7 @@
         <div class="header-wrapper shrink-0 px-[40px]">
           <BaseHeader />
         </div>
-        <div ref="contentBoxRef" class="content-box app-scrollbar px-[40px] pb-[96px]">
+        <div ref="contentBoxRef" class="content-box app-scrollbar px-[40px]" :style="contentBoxStyle">
           <router-view v-slot="{ Component }" >
             <component v-if="!isLoaidng" :is="Component"></component>
           </router-view>
@@ -17,7 +17,7 @@
       </div>
     </div>
   </div>
-  <BaseButtom :class="[musicStore.musicUrl.length ? 'bottom-show' : 'bottom-visible']">
+  <BaseButtom :class="[hasPlayer ? 'bottom-show' : 'bottom-visible']">
     <template #default>
       <MusicPlayer ref="audioInstance" :src="musicStore.musicUrl" :songs="musicStore.songs" />
     </template>
@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onMounted, provide, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMusicStore } from '@/store';
 import { useContextMenu } from '@/composables/useContextMenu';
@@ -43,6 +43,10 @@ const route = useRoute()
 const audioInstance = ref<MusicPlayerInstanceType>()
 
 const musicStore = useMusicStore()
+const hasPlayer = computed(() => !!musicStore.musicUrl.length)
+const contentBoxStyle = computed(() => ({
+  paddingBottom: hasPlayer.value ? '96px' : '16px'
+}))
 
 // 全局上下文菜单
 const { MENU_kEY, setActiveMenu, activeMenu } = useContextMenu()

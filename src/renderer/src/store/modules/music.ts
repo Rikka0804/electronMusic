@@ -144,11 +144,11 @@ export const useMusicStore = defineStore('my-music', () => {
   // 0心动 1列表循环 2随机播放 3单曲循环
   const orderTarget = (i: 0 | 1 | 2 | 3) => {
     if (i === 0) {
-      return (currentIndex.value + 1) % runtimeIds.value.length
+      return (currentIndex.value + 1) % runtimeList.value!.tracks!.length
     } else if (i === 1) {
-      return (currentIndex.value + 1) % runtimeIds.value.length
+      return (currentIndex.value + 1) % runtimeList.value!.tracks!.length
     } else if (i === 2) {
-      return randomNum(0, runtimeIds.value.length - 1)
+      return randomNum(0, runtimeList.value!.tracks!.length - 1)
     } else {
       return currentIndex.value
     }
@@ -156,7 +156,7 @@ export const useMusicStore = defineStore('my-music', () => {
 
   const playEnd = () => {
     currentIndex.value = orderTarget(orderStatusVal.value!)
-    if (currentIndex.value > runtimeIds.value.length - 1) {
+    if (currentIndex.value > runtimeList.value!.tracks!.length - 1) {
       return
     }
     getMusicUrlHandler(runtimeList.value!.tracks![currentIndex.value])
@@ -165,10 +165,10 @@ export const useMusicStore = defineStore('my-music', () => {
   const cutSongHandler = (target: boolean) => {
     if ([0, 1, 3].includes(orderStatusVal.value!)) {
       currentIndex.value = target ? currentIndex.value + 1 : currentIndex.value - 1
-      if (currentIndex.value > runtimeIds.value.length - 1) {
+      if (currentIndex.value > runtimeList.value!.tracks!.length - 1) {
         currentIndex.value = 0
       } else if (currentIndex.value < 0) {
-        currentIndex.value = runtimeIds.value.length - 1
+        currentIndex.value = runtimeList.value!.tracks!.length - 1
       }
       getMusicUrlHandler(runtimeList.value!.tracks![currentIndex.value])
       return

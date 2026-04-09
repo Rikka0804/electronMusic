@@ -2,7 +2,7 @@
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: $line; // 使用参数控制显示的行数
+  -webkit-line-clamp: $line;
   overflow: hidden;
 }
 $text: rgb(210, 210, 210);

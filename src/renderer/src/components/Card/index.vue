@@ -1,6 +1,6 @@
 <template>
-  <div class="card-box inline-block w-[calc(18vw-20px)]  rounded cursor-pointer">
-    <div class="card w-full h-[calc(18vw-20px)] rounded"
+  <div class="card-box inline-block rounded cursor-pointer">
+    <div class="card w-full rounded"
       :style="{ backgroundImage: `url(${props.picUrl}?param=400y400` }">
       <div class="start-icon-box">
         <i class="iconfont operation icon-kaishi1"></i>
@@ -38,6 +38,12 @@ const props = defineProps<Props>()
 
 <style scoped lang="scss">
 .card-box {
+  --card-size: 200px;
+  --card-play-button-size: 48px;
+  --card-play-icon-size: 22px;
+  width: var(--card-size);
+  max-width: 100%;
+
   &:hover {
     .card .start-icon-box {
       visibility: visible;
@@ -48,6 +54,7 @@ const props = defineProps<Props>()
   }
 
   .card {
+    height: var(--card-size);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -57,8 +64,8 @@ const props = defineProps<Props>()
     .start-icon-box {
       position: absolute;
       bottom: 10px;
-      width: calc(5vw - 25px);
-      height: calc(5vw - 25px);
+      width: var(--card-play-button-size);
+      height: var(--card-play-button-size);
       right: 10px;
       border-radius: 50%;
       background-color: rgb(255, 255, 255);
@@ -71,7 +78,7 @@ const props = defineProps<Props>()
 
       .icon-kaishi1 {
         color: $subject;
-        font-size: calc(2vw - 5px);
+        font-size: var(--card-play-icon-size);
       }
     }
 

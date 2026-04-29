@@ -79,12 +79,13 @@ const handleCardClick = (id: number) => {
 
 <style scoped lang="scss">
 :deep(.el-skeleton) {
-  width: calc(20vw - 20px);
+  --card-size: 200px;
+  width: var(--card-size);
 
   .el-skeleton__image {
     border-radius: 5px;
-    width: calc(20vw - 20px);
-    height: calc(20vw - 20px);
+    width: var(--card-size);
+    height: var(--card-size);
   }
 }
 </style>

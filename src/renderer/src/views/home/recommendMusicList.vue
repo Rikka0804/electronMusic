@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import MusicList from '@/views/playList/components/MusicList.vue';
 import { columns } from '@/views/playList/musciList'
-import { onMounted, computed } from 'vue';
+import { onMounted } from 'vue';
 import { useUserStore, useMusicStore } from '@/store';
 const userStore = useUserStore()
 const musicStore = useMusicStore()
@@ -33,14 +33,10 @@ onMounted(() => {
     tracks: userStore.dailyRecommendPlayList
   }
 })
-const dailyIds = computed(() => {
-  return userStore.dailyRecommendPlayList.map(i => i.id)
-})
-
 const handleUpdateRuntimeList = () => {
 
 
-  musicStore.updateRuntimeList({ tracks: userStore.dailyRecommendPlayList, id: 0, specialType: 0 }, dailyIds.value);
+  musicStore.updateRuntimeList({ tracks: userStore.dailyRecommendPlayList, id: 0, specialType: 0 });
   musicStore.orderStatusVal = 1
 }
 

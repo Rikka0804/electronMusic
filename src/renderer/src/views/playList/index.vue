@@ -36,7 +36,7 @@ const musicStore = useMusicStore()
 const handleUpdateRuntimeList = () => {
   console.log(playListState.playList.length);
 
-  musicStore.updateRuntimeList({ tracks: playListState.playList, ...playListState.listInfo }, playListState.ids);
+  musicStore.updateRuntimeList({ tracks: playListState.playList, ...playListState.listInfo });
   musicStore.orderStatusVal = 1
 }
 

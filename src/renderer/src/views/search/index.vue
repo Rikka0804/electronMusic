@@ -40,6 +40,9 @@ const searchMusic = defineAsyncComponent(() => import('./components/searchMusic.
 const searchSongList = defineAsyncComponent(() => import('./components/searchMusicList.vue'))
 const searchSinger = defineAsyncComponent(() => import('./components/searchSinger.vue'))
 const route = useRoute()
+
+
+
 const musicStore = useMusicStore()
 interface SearchResult {
   songs: GetMusicDetailData[],
@@ -55,9 +58,10 @@ const allState = ref<SearchResult>({
   songLists: []
 })
 
+// 初始化当前列表
 const initCurrentItem = (musciList: GetMusicDetailData[]) => {
   musicStore.currentItem = {
-    id: 1,
+    id: route.query.keywords as string,
     name: '搜索',
     specialType: 0,
     userId: 0,

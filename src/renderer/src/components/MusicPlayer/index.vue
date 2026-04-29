@@ -192,10 +192,7 @@ const setOrderHandler = async () => {
   // 切换到非心动模式时，获取播放列表详情
   if (runtimeList?.specialType === 5 && musicStore.orderStatusVal === 0 && newValue !== 0) {
     await getPlayListDetail(runtimeList.id!)
-    await musicStore.updateTracks(
-      playListState.playList,
-      playListState.playList.map((item) => item.id)
-    )
+    await musicStore.updateTracks(playListState.playList)
     await musicStore.initPlay()
   }
   // 切换到心动模式时，获取心动歌曲列表

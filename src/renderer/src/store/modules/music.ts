@@ -31,8 +31,7 @@ export const useMusicStore = defineStore('my-music', () => {
   // 用户当前正在播放音乐的列表
   const runtimeList = ref<RuntimeListOptional | null>(null)
   // 用户当前正在播放音乐的列表ids
-  const runtimeIds = ref<number[]>([])
-  const updateRuntimeList = (val: RuntimeListOptional, ids: number[]) => {
+  const updateRuntimeList = (val: RuntimeListOptional) => {
     // 非心动列表 切换到列表循环模式
     if (val.specialType !== 5 && orderStatusVal.value === 0) {
       orderStatusVal.value = 1
@@ -44,12 +43,10 @@ export const useMusicStore = defineStore('my-music', () => {
       }))
     }
 
-    runtimeIds.value = [...ids]
   }
-  const updateTracks = (tracks: GetMusicDetailData[], ids: number[]) => {
+  const updateTracks = (tracks: GetMusicDetailData[]) => {
     if (runtimeList.value) {
       runtimeList.value.tracks = tracks
-      runtimeIds.value = ids
     }
   }
   // 清空当前正在播放的音乐列表
@@ -125,7 +122,7 @@ export const useMusicStore = defineStore('my-music', () => {
     if (!runtimeList.value || !songs.value?.id) {
       return
     }
-    const { data } = await getIntelligenceListApi(runtimeList.value.id!, songs.value?.id, songs.value?.id)
+    const { data } = await getIntelligenceListApi(runtimeList.value.id! as number, songs.value?.id, songs.value?.id)
 
     const tracks = data
       .filter((item) => !!item.songInfo)
@@ -133,11 +130,7 @@ export const useMusicStore = defineStore('my-music', () => {
         return item.songInfo!
       })
     tracks.unshift(songs.value)
-    const ids = tracks.map((item) => {
-      return item!.id
-    })
-    ids.unshift(songs.value.id)
-    updateTracks(tracks, ids)
+    updateTracks(tracks)
 
   }
 
@@ -177,7 +170,7 @@ export const useMusicStore = defineStore('my-music', () => {
       const i =
         lastIndexList.value[lastIndexList.value.length - 1] || orderTarget(orderStatusVal.value)
       getMusicUrlHandler(runtimeList.value!.tracks![i])
-      lastIndexList.value.splice(runtimeIds.value!.length - 1)
+      lastIndexList.value.splice(runtimeList.value!.tracks!.length - 1)
       return
     }
     playEnd()
@@ -229,7 +222,6 @@ export const useMusicStore = defineStore('my-music', () => {
     clearCurrentItem,
     updateCurrentItem,
     runtimeList,
-    runtimeIds,
     clearRuntimeList,
     updateRuntimeList,
     getMusicUrlHandler,

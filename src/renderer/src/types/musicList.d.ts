@@ -52,6 +52,7 @@ export type CurrentItem = GetPlayListDetailRes['playlist']
 
 // 用户当前正在播放音乐的列表
 export interface RuntimeList extends PlayList {
+  id: number | string
   tracks: GetMusicDetailData[]
 }
 export type RuntimeListOptional = Partial<RuntimeList>

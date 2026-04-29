@@ -6,9 +6,21 @@
       </div>
     </searchItemContainer>
     <searchItemContainer title="单曲" tab="music" @click-title="emit('changeTab', $event)">
-       <!-- <MusicList  :needSearch="false" @play="handlePlay" /> -->  // TODO: 搜索结果的歌曲列表，点击播放时需要调用搜索接口获取歌曲详情接口获取歌曲url
+      <MusicList :needSearch="false" :columns="columns" :list="allState.songs"
+        @updateRuntimeList="handleUpdateRuntimeList" @play="handlePlay" />
     </searchItemContainer>
     <searchItemContainer title="歌单" tab="musicList" @click-title="emit('changeTab', $event)">
+      <div class="card-list">
+        <Card
+          v-for="item in allState.songLists"
+          :key="item.id"
+          :picUrl="item.coverImgUrl"
+          :name="item.name"
+          :playCount="item.playCount"
+          :trackCount="item.trackCount"
+          @click="handleCardClick(item.id)"
+        />
+      </div>
     </searchItemContainer>
   </div>
 </template>
@@ -19,7 +31,9 @@ import searchItemContainer from './searchItemContainer.vue';
 import type { PlayList, GetMusicDetailData } from '@/types/musicList'
 import type { searchSingerItem } from '@/types/search'
 import MusicList from '@/views/playList/components/MusicList.vue';
-
+import { columns } from '@/views/playList/musciList'
+import { useMusicStore } from '@/store';
+import { useRouter } from 'vue-router';
 interface Props {
   allState: {
     songs: GetMusicDetailData[],
@@ -34,7 +48,39 @@ interface Emits {
 
 defineProps<Props>()
 const emit = defineEmits<Emits>()
+
+const musicStore = useMusicStore()
+const router = useRouter()
+
+const handleUpdateRuntimeList = () => {
+
+  musicStore.updateRuntimeList({ ...musicStore.currentItem });
+  musicStore.orderStatusVal = 1
+}
+// 播放歌曲
+const handlePlay = async (item, index) => {
+
+  return await musicStore.getMusicUrlHandler(item, index)
+
+
+}
+
+const handleCardClick = (id: number) => {
+  router.push({
+    path: '/playList',
+    query: {
+      id
+    }
+  })
+}
 </script>
 
 <style scoped lang="scss">
+.card-list {
+  --card-size: 200px;
+  display: grid;
+  grid-gap: 20px 0;
+  justify-content: space-between;
+  grid-template-columns: repeat(auto-fill, var(--card-size));
+}
 </style>

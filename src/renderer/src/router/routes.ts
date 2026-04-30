@@ -32,24 +32,29 @@ export const AppRoutes = [
         component: () => import('@/views/lately/index.vue')
       },
       {
-        path:'/cloud',
-        name:'我的音乐云盘',
-        component:()=>import('@/views/cloud/index.vue')
+        path: '/cloud',
+        name: '我的音乐云盘',
+        component: () => import('@/views/cloud/index.vue')
       },
       {
-        path:'/playList',
-        name:'歌单',
-        component:()=>import('@/views/playList/index.vue')
-      },
-       {
-        path:'/recommendPlayList',
-        name:'推荐歌单',
-        component:()=>import('@/views/home/recommendMusicList.vue')
+        path: '/playList',
+        name: '歌单',
+        component: () => import('@/views/playList/index.vue')
       },
       {
-        path:'/search',
-        name:'搜索',
-        component:()=>import('@/views/search/index.vue')
+        path: '/recommendPlayList',
+        name: '推荐歌单',
+        component: () => import('@/views/home/recommendMusicList.vue')
+      },
+      {
+        path: '/search',
+        name: '搜索',
+        component: () => import('@/views/search/index.vue')
+      },
+      {
+        path: "/singerInfo",
+        name: '歌手信息',
+        component: () => import('@/views/singerInfo/index.vue')
       }
 
     ]

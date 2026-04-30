@@ -2,7 +2,7 @@
   <div class="all-page h-full overflow-y-auto">
     <searchItemContainer title="歌手" tab="singer" @click-title="emit('changeTab', $event)">
       <div class="flex gap-[20px]">
-        <singerItem v-for="(item, index) in allState.singers" :key="index" :singer="item"></singerItem>
+        <singerItem v-for="(item, index) in allState.singers" :key="index" :singer="item" ></singerItem>
       </div>
     </searchItemContainer>
     <searchItemContainer title="单曲" tab="music" @click-title="emit('changeTab', $event)">

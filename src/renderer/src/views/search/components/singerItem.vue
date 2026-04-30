@@ -1,5 +1,5 @@
 <template>
-  <div class="singer-item w-[14vw] h-[20vw] rounded p-[15px] cursor-pointer flex flex-col items-center gap-[10px]">
+  <div class="singer-item w-[14vw] h-[20vw] rounded p-[15px] cursor-pointer flex flex-col items-center gap-[10px]" @click="handleClick">
     <div class="singer-pic w-[12vw] h-[12vw] rounded-[50%] overflow-hidden">
       <img :src="props.singer.img1v1Url" alt="" class="w-full h-full object-cover">
     </div>
@@ -13,12 +13,23 @@
 
 <script setup lang="ts">
 import type { searchSingerItem } from '@/types/search'
+import { useRouter } from 'vue-router'
 interface Props {
   singer: searchSingerItem
 }
 
 
 const props = defineProps<Props>()
+const router = useRouter()
+
+const handleClick = () => {
+  router.push({
+    path: '/singerInfo',
+    query: {
+      id: props.singer.id
+    }
+  })
+}
 
 </script>
 

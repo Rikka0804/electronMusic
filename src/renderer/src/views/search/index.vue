@@ -20,35 +20,33 @@
         <searchSongList v-if="currentList === 'musicList'"></searchSongList>
         <searchSinger v-if="currentList === 'singer'"></searchSinger>
       </div>
-
-
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
+import { ref, watch, defineAsyncComponent } from 'vue'
 import { useRoute } from 'vue-router'
-import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { list } from './config'
-import {useMusicStore} from '@/store'
+import { useMusicStore } from '@/store'
 import { getSearchMusictApi, getSearchSingerApi, getSearchSongListApi } from '@/api/search'
 import type { PlayList, GetMusicDetailData } from '@/types/musicList'
 import type { searchSingerItem } from '@/types/search'
+
 const searchAll = defineAsyncComponent(() => import('./components/searchAll.vue'))
 const searchMusic = defineAsyncComponent(() => import('./components/searchMusic.vue'))
 const searchSongList = defineAsyncComponent(() => import('./components/searchMusicList.vue'))
 const searchSinger = defineAsyncComponent(() => import('./components/searchSinger.vue'))
+
 const route = useRoute()
-
-
-
 const musicStore = useMusicStore()
+
 interface SearchResult {
-  songs: GetMusicDetailData[],
-  singers: searchSingerItem[],
+  songs: GetMusicDetailData[]
+  singers: searchSingerItem[]
   songLists: PlayList[]
 }
+
 //加载
 const loading = ref(true)
 // 综合
@@ -59,13 +57,13 @@ const allState = ref<SearchResult>({
 })
 
 // 初始化当前列表
-const initCurrentItem = (musciList: GetMusicDetailData[]) => {
+const initCurrentItem = (keywords: string, musicList: GetMusicDetailData[]) => {
   musicStore.currentItem = {
-    id: route.query.keywords as string,
+    id: keywords,
     name: '搜索',
     specialType: 0,
     userId: 0,
-    tracks: musciList
+    tracks: musicList
   }
 }
 
@@ -83,28 +81,35 @@ const initAll = async (keywords: string) => {
       getSearchSingerApi({ keywords, type: 100, limit: 4 }),
       getSearchSongListApi({ keywords, type: 1000, limit: 4 })
     ])
+
     allState.value.songs = musicRes.result.songs
     allState.value.singers = singerRes.result.artists
     allState.value.songLists = songListRes.result.playlists
-    initCurrentItem(musicRes.result.songs)
-
+    initCurrentItem(keywords, musicRes.result.songs)
   } catch (err) {
     console.error('搜索接口失败:', err)
   } finally {
     loading.value = false
   }
-
 }
 
-onMounted(() => {
-  initAll(route.query.keywords as string)
-})
+watch(
+  () => route.query.keywords,
+  (keywords) => {
+    if (!keywords || typeof keywords !== 'string') return
+    initAll(keywords)
+  },
+  {
+    immediate: true
+  }
+)
 
 // 分页
 const page = ref({
   limit: 10,
   offset: 0
 })
+
 //单曲
 const singleState = ref<{ songs: GetMusicDetailData[] }>({
   songs: []
@@ -121,11 +126,10 @@ const singerState = ref<{ singers: searchSingerItem[] }>({
 })
 
 const currentList = ref(list[0].name)
+
 const handleChangeTab = (tab: 'music' | 'musicList' | 'singer') => {
   currentList.value = tab
 }
-
-
 </script>
 
 <style scoped lang="scss">

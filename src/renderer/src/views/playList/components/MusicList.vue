@@ -42,7 +42,7 @@
                           v-for="(ar, index) in value.ar" :key="ar.id || index" :style="{
                             cursor: ar.id ? 'pointer' : 'default',
 
-                          }">
+                          }" @click="goSinger(ar)">
                           {{ ar.name || '未知歌手' }}
                           <span v-if="index < value.ar.length - 1" style="color: #969696"> / </span>
                         </span></div>
@@ -69,8 +69,9 @@ import { ref, computed, watch } from 'vue'
 import { formattingTime } from '@/utils/utils'
 import { type Columns } from '../musciList'
 import { GetMusicDetailData, PlayList } from '@/types/musicList'
-import { useUserStore , useMusicStore} from '@/store'
+import { useUserStore, useMusicStore } from '@/store'
 import ContextMenu from '@/components/ContextMenu/index.vue'
+import { useRouter } from 'vue-router'
 interface Props {
   columns: Columns[],
   list: GetMusicDetailData[],
@@ -169,6 +170,23 @@ const playHandler = (item: GetMusicDetailData) => {
   }
 
 
+}
+const router = useRouter()
+// 前往歌手页
+const goSinger = (ar) => {
+
+
+  if (ar.id == 0) {
+    return
+  }
+
+  router.push({
+    path: '/singerInfo',
+    query: {
+      id: ar.id,
+
+    }
+  })
 }
 
 interface MenuItem {

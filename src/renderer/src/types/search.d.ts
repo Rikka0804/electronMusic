@@ -1,3 +1,4 @@
+import {GetMusicDetailData} from '@/types/musicList'
 // 搜索默认值
 export interface getDefaultSearchRes {
   code: number
@@ -55,6 +56,24 @@ export interface searchSingerRes {
     artists: searchSingerItem[]
   }
 
+}
+
+
+//歌手信息
+export interface singerInfo {
+  img1v1Url: string,
+  alias: string[],
+  followed: false,
+  name: string,
+  accountId: number,
+  id:number,
+  musicSize: number,
+}
+
+// 歌手详情返回
+export interface singerDetail {
+  artist:singerInfo,
+  hotSongs:GetMusicDetailData[],
 }
 
 

@@ -1,5 +1,5 @@
 import { request } from '@/utils/request'
-import type { getDefaultSearchRes, getHotSearchRes, getSearchSongRes, searchObj, searchSingerRes } from '@/types/search'
+import type { getDefaultSearchRes, getHotSearchRes, getSearchSongRes, searchObj, searchSingerRes ,singerDetail} from '@/types/search'
 import type { searchMusicListRes, searchMusicRes } from '@/types/musicList'
 
 // 获取默认搜索关键字
@@ -26,14 +26,6 @@ export const getSearchSingerApi = (searchParams: searchObj) =>
 export const getSearchSongListApi = (searchParams: searchObj) =>
   request<searchMusicListRes>('/cloudsearch', 'get', searchParams)
 
-// 歌手详情
-export const getSingerInfoApi = (id: number) =>
-  request('/artist/detail', 'get', { id })
-
-// 歌手单曲
-export const getSingerSongApi = (id: number) =>
-  request('/artists', 'get', { id })
-
-// 歌手描述
-export const getSingerDescApi = (id: number) =>
-  request('/artist/desc', 'get', { id })
+// 歌手详情单曲
+export const getSingerDetailApi = (id: number) =>
+  request<singerDetail>('/artists', 'get', { id })

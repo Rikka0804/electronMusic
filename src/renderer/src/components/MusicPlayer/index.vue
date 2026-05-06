@@ -191,7 +191,7 @@ const setOrderHandler = async () => {
   const newValue = (musicStore.orderStatusVal + 1) % orderStatus.length
   // 切换到非心动模式时，获取播放列表详情
   if (runtimeList?.specialType === 5 && musicStore.orderStatusVal === 0 && newValue !== 0) {
-    await getPlayListDetail(runtimeList.id!)
+    await getPlayListDetail(runtimeList.id! as number)
     await musicStore.updateTracks(playListState.playList)
     await musicStore.initPlay()
   }

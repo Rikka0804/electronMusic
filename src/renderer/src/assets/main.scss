@@ -1,9 +1,11 @@
+@use "sass:meta";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import "./scroll.scss";
-@import "./mySet.scss";
+@include meta.load-css("./scroll.scss");
+@include meta.load-css("./mySet.scss");
 
 
 * {
@@ -76,7 +78,5 @@ body {
 //     padding-bottom: 30px;
 //   }
 // }
-
-
 
 

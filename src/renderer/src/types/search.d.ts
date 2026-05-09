@@ -76,4 +76,9 @@ export interface singerDetail {
   hotSongs:GetMusicDetailData[],
 }
 
+// 全部歌曲返回
+export interface singerAllSong {
+  songs:GetMusicDetailData[]
+}
+
 

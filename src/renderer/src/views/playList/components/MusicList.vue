@@ -158,6 +158,7 @@ const playHandler = (item: GetMusicDetailData) => {
   } else {
     // 当前音乐列表是当前播放的音乐
     if (musicStore.currentItem?.id === musicStore.runtimeList?.id) {
+
       if (musicStore.songs?.id === item.id) {
         return window.$audio.togglePlay()
       }

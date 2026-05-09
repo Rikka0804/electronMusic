@@ -8,8 +8,8 @@
         <el-button type="danger" style="width: 100px;" @click="playAllHandler">▶ 播放全部</el-button>
       </div>
     </div>
-    <MusicList :columns="columns" :list="userStore.dailyRecommendPlayList" @play="handlePlay"
-      @updateRuntimeList="handleUpdateRuntimeList" :needSearch="false"/>
+    <MusicList :columns="columns" :list="allSongs ?? []" @play="handlePlay"
+      @updateRuntimeList="handleUpdateRuntimeList" :needSearch="false" :loading="loading"/>
   </div>
 
 </template>
@@ -17,26 +17,34 @@
 <script lang="ts" setup>
 import MusicList from '@/views/playList/components/MusicList.vue';
 import { columns } from '@/views/playList/musciList'
-import { onMounted } from 'vue';
-import { useUserStore, useMusicStore } from '@/store';
-const userStore = useUserStore()
+import { onMounted, ref } from 'vue';
+import { getSingerAllSongApi } from '@/api/search'
+import { useRoute } from 'vue-router';
+import { useMusicStore } from '@/store';
+import { GetMusicDetailData } from '@/types/musicList'
 const musicStore = useMusicStore()
+const route = useRoute()
 
 
-onMounted(() => {
-  musicStore.clearCurrentItem
+const allSongs = ref<GetMusicDetailData[]>()
+const loading = ref<boolean>(true)
+const getAllSong = async (id: number) => {
+  loading.value = true
+  const allSong = await getSingerAllSongApi(id)
+  allSongs.value = allSong.songs
   musicStore.currentItem = {
-    id: 0,
-    name: '每日推荐',
+    id,
+    name: '全部歌曲',
     specialType: 0,
     userId: 0,
-    tracks: userStore.dailyRecommendPlayList
+    tracks: allSong.songs
   }
-})
+  loading.value = false
+}
 const handleUpdateRuntimeList = () => {
 
 
-  musicStore.updateRuntimeList({ tracks: userStore.dailyRecommendPlayList, id: 0, specialType: 0 });
+  musicStore.updateRuntimeList({ ...musicStore.currentItem });
   musicStore.orderStatusVal = 1
 }
 
@@ -68,7 +76,10 @@ const handlePlay = async (item, index) => {
 
 }
 
-
+onMounted(() => {
+  const id = route.query.id
+  getAllSong(Number(id))
+})
 </script>
 
 <style scoped lang="scss"></style>

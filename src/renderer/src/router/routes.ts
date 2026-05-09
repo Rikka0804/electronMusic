@@ -55,6 +55,11 @@ export const AppRoutes = [
         path: "/singerInfo",
         name: '歌手信息',
         component: () => import('@/views/singerInfo/index.vue')
+      },
+      {
+        path:"/allSong",
+        name:'全部歌曲',
+        component: () => import('@/views/singerInfo/singerAllSong.vue')
       }
 
     ]

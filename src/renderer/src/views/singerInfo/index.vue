@@ -2,7 +2,7 @@
   <div class="singerInfo mt-[15px]">
     <singerCard :user-info="singerInfo?.artist" :loading="loading" @play-all="playAllHandler" />
     <div class="hotSong mt-[10px]">
-      <div class="text-[18px] cursor-pointer">
+      <div class="text-[18px] cursor-pointer" @click="handleAll">
         热门歌曲>
       </div>
       <MusicList :needSearch="false" :columns="columns" :list="singerInfo?.hotSongs ?? []"
@@ -17,7 +17,7 @@ import { columns } from '@/views/playList/musciList'
 import MusicList from '@/views/playList/components/MusicList.vue';
 import { useMusicStore } from '@/store'
 import { watch, ref } from 'vue'
-import { useRoute } from 'vue-router';
+import { useRoute,useRouter } from 'vue-router';
 import { getSingerDetailApi } from '@/api/search'
 import type { singerDetail } from '@/types/search'
 import singerCard from './components/singerCard.vue'
@@ -68,6 +68,18 @@ const playAllHandler = () => {
   handleUpdateRuntimeList()
   musicStore.initPlay()
 
+}
+
+const router = useRouter()
+// 前往全部歌曲
+const handleAll = () => {
+  router.push({
+    path:'/allSong',
+    query:{
+      id:Number(route.query.id)
+    }
+
+  })
 }
 
 watch(

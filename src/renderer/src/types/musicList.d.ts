@@ -156,6 +156,7 @@ export interface searchMusicListRes {
 export interface searchMusicRes {
   result:{
     songs: GetMusicDetailData[]
+    songCount: number
   }
 }
 

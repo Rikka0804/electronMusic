@@ -1,5 +1,5 @@
 <template>
-  <div class="context-menu-wrapper h-full w-full relative" @contextmenu="showMenu">
+  <div class="context-menu-wrapper relative block w-full" @contextmenu="showMenu">
     <slot></slot>
   </div>
   <Teleport to="body">

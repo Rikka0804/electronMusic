@@ -4,21 +4,18 @@
       {{ route.query.keywords }}
     </div>
     <div class="pageContent flex-1 min-h-0 flex flex-col">
-      <Tabs :list="list" v-model="currentList">
-      </Tabs>
+      <Tabs :list="list" v-model="currentList" />
       <div
         class="searchLoading min-h-0 h-[50px]"
         v-show="loading"
         v-loading="loading"
         element-loading-background="transparent"
-      >
-
-      </div>
+      />
       <div class="min-h-0 flex-1" v-show="!loading">
-        <searchAll v-if="currentList === 'all'" :all-state="allState" @change-tab="handleChangeTab"></searchAll>
-        <searchMusic v-if="currentList === 'music'"></searchMusic>
-        <searchSongList v-if="currentList === 'musicList'"></searchSongList>
-        <searchSinger v-if="currentList === 'singer'"></searchSinger>
+        <searchAll v-if="currentList === 'all'" :all-state="allState" @change-tab="handleChangeTab" />
+        <searchMusic v-if="currentList === 'music'" />
+        <searchSongList v-if="currentList === 'musicList'" />
+        <searchSinger v-if="currentList === 'singer'" />
       </div>
     </div>
   </div>
@@ -43,20 +40,20 @@ const musicStore = useMusicStore()
 
 interface SearchResult {
   songs: GetMusicDetailData[]
+  songCount: number
   singers: searchSingerItem[]
   songLists: PlayList[]
 }
 
-//加载
 const loading = ref(true)
-// 综合
 const allState = ref<SearchResult>({
   singers: [],
   songs: [],
+  songCount: 0,
   songLists: []
 })
+const currentList = ref(list[0].name)
 
-// 初始化当前列表
 const initCurrentItem = (keywords: string, musicList: GetMusicDetailData[]) => {
   musicStore.currentItem = {
     id: keywords,
@@ -72,7 +69,8 @@ const initAll = async (keywords: string) => {
   allState.value = {
     singers: [],
     songs: [],
-    songLists: []
+    songLists: [],
+    songCount: 0
   }
 
   try {
@@ -83,6 +81,7 @@ const initAll = async (keywords: string) => {
     ])
 
     allState.value.songs = musicRes.result.songs
+    allState.value.songCount = musicRes.result.songCount
     allState.value.singers = singerRes.result.artists
     allState.value.songLists = songListRes.result.playlists
     initCurrentItem(keywords, musicRes.result.songs)
@@ -97,35 +96,13 @@ watch(
   () => route.query.keywords,
   (keywords) => {
     if (!keywords || typeof keywords !== 'string') return
+    currentList.value = list[0].name
     initAll(keywords)
   },
   {
     immediate: true
   }
 )
-
-// 分页
-const page = ref({
-  limit: 10,
-  offset: 0
-})
-
-//单曲
-const singleState = ref<{ songs: GetMusicDetailData[] }>({
-  songs: []
-})
-
-// 歌单
-const songListState = ref<{ songLists: PlayList[] }>({
-  songLists: []
-})
-
-// 歌手
-const singerState = ref<{ singers: searchSingerItem[] }>({
-  singers: []
-})
-
-const currentList = ref(list[0].name)
 
 const handleChangeTab = (tab: 'music' | 'musicList' | 'singer') => {
   currentList.value = tab

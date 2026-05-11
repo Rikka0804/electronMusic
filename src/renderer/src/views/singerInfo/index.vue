@@ -76,7 +76,8 @@ const handleAll = () => {
   router.push({
     path:'/allSong',
     query:{
-      id:Number(route.query.id)
+      id:Number(route.query.id),
+      size: singerInfo.value?.artist.musicSize
     }
 
   })

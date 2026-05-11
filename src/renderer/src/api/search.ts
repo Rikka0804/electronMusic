@@ -31,5 +31,5 @@ export const getSingerDetailApi = (id: number) =>
   request<singerDetail>('/artists', 'get', { id })
 
 // 歌手全部歌曲
-export const getSingerAllSongApi = (id: number) =>
-  request<singerAllSong>('/artist/songs', 'get', { id })
+export const getSingerAllSongApi = (id: number, offset?: number) =>
+  request<singerAllSong>('/artist/songs', 'get', { id, offset ,limit:50})

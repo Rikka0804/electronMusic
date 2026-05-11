@@ -16,6 +16,7 @@ app.use(pinia)
 // element-plus配置
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

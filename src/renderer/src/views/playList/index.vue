@@ -1,7 +1,14 @@
 <template>
-  <div class="w-full">
-    <ListInfo :loading="playListState.InfoLoading" @playAll="playAllHandler" :listInfo="playListState.listInfo" />
-    <MusicList v-if="!playListState.InfoLoading" :loading="playListState.listLoading" :columns="columns" :list="playListState.playList" :listInfo="playListState.listInfo" @play="handlePlay"
+  <div class="w-full h-full flex flex-col min-h-0">
+    <ListInfo class="shrink-0" :loading="playListState.InfoLoading" @playAll="playAllHandler" :listInfo="playListState.listInfo" />
+    <MusicList
+      v-if="!playListState.InfoLoading"
+      class="flex-1 min-h-0"
+      :loading="playListState.listLoading"
+      :columns="columns"
+      :list="playListState.playList"
+      :listInfo="playListState.listInfo"
+      @play="handlePlay"
       @updateRuntimeList="handleUpdateRuntimeList" />
   </div>
 </template>

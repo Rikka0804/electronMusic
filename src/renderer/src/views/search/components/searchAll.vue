@@ -6,7 +6,7 @@
       </div>
     </searchItemContainer>
     <searchItemContainer title="单曲" tab="music" @click-title="emit('changeTab', $event)">
-      <MusicList :needSearch="false" :columns="columns" :list="allState.songs"
+      <MusicList :needSearch="false" :columns="columns" :list="allState.songs" :virtual-threshold="60"
         @updateRuntimeList="handleUpdateRuntimeList" @play="handlePlay" />
     </searchItemContainer>
     <searchItemContainer title="歌单" tab="musicList" @click-title="emit('changeTab', $event)">

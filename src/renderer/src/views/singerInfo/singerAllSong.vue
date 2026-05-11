@@ -1,6 +1,6 @@
 <template>
-  <div ref="dailyListRef" class="dailyList">
-    <div class="listHead">
+  <div class="dailyList h-full flex flex-col min-h-0">
+    <div class="listHead shrink-0">
       <div class="title text-[24px] font-bold">
         全部歌曲
       </div>
@@ -9,37 +9,39 @@
       </div>
     </div>
     <MusicList
+      class="flex-1 min-h-0"
       :columns="columns"
       :list="allSongs"
       :needSearch="false"
       :loading="loading"
+      :forceVirtual="forceVirtual"
       @play="handlePlay"
       @updateRuntimeList="handleUpdateRuntimeList"
+      @reachBottom="handleReachBottom"
     />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { ElLoading } from 'element-plus'
 import { useRoute } from 'vue-router'
 import { getSingerAllSongApi } from '@/api/search'
 import { useMusicStore } from '@/store'
 import type { GetMusicDetailData } from '@/types/musicList'
 import MusicList from '@/views/playList/components/MusicList.vue'
-import { columns } from '@/views/playList/musciList'
+import { MUSIC_LIST_VIRTUAL_THRESHOLD, columns } from '@/views/playList/musciList'
 
 const musicStore = useMusicStore()
 const route = useRoute()
 
-const dailyListRef = ref<HTMLDivElement | null>(null)
-const scrollContainerRef = ref<HTMLElement | null>(null)
 const allSongs = ref<GetMusicDetailData[]>([])
 const loading = ref(true)
 const isLoadingMore = ref(false)
 const hasMore = ref(true)
 const reachBottomLock = ref(false)
 const total = computed(() => Number(route.query.size) || 0)
+const forceVirtual = computed(() => total.value >= MUSIC_LIST_VIRTUAL_THRESHOLD)
 
 let fullScreenLoading: ReturnType<typeof ElLoading.service> | null = null
 
@@ -96,6 +98,7 @@ const getAllSong = async (id: number, isLoadMore = false) => {
   } finally {
     if (isLoadMore) {
       isLoadingMore.value = false
+      reachBottomLock.value = false
       closeFullScreenLoading()
     } else {
       loading.value = false
@@ -122,20 +125,8 @@ const handlePlay = async (item: GetMusicDetailData, index: number) => {
   await musicStore.getintelligenceList()
 }
 
-const handleScroll = () => {
+const handleReachBottom = () => {
   if (loading.value || isLoadingMore.value || !hasMore.value) return
-
-  const target = scrollContainerRef.value
-  if (!target) return
-
-  const { scrollTop, clientHeight, scrollHeight } = target
-  const isNearBottom = scrollTop + clientHeight >= scrollHeight - 80
-
-  if (!isNearBottom) {
-    reachBottomLock.value = false
-    return
-  }
-
   if (reachBottomLock.value) return
 
   reachBottomLock.value = true
@@ -146,20 +137,11 @@ watch(
   () => [route.query.id, route.query.size],
   ([id]) => {
     if (!id) return
+    closeFullScreenLoading()
     getAllSong(Number(id))
   },
   { immediate: true }
 )
-
-onMounted(() => {
-  scrollContainerRef.value = dailyListRef.value?.closest('.content-box') ?? null
-  scrollContainerRef.value?.addEventListener('scroll', handleScroll)
-})
-
-onBeforeUnmount(() => {
-  scrollContainerRef.value?.removeEventListener('scroll', handleScroll)
-  closeFullScreenLoading()
-})
 </script>
 
 <style scoped lang="scss"></style>

@@ -1,5 +1,5 @@
 import { h } from 'vue'
-import { GetMusicDetailData } from '@/types/musicList'
+export const MUSIC_LIST_VIRTUAL_THRESHOLD = 30
 
 
 export interface Columns {

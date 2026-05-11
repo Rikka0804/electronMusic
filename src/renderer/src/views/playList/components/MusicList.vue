@@ -1,210 +1,234 @@
 <template>
-  <div class="musicList mt-[15px]" v-if="!loading && list.length > 0">
-    <div class="search" v-if="needSearch">
-      <el-input prefix-icon="Search" clearable placeholder="搜索" v-model="searchKey" @focus="isFocus = true"
-        @blur="isFocus = false" :class="{ active: isFocus || searchKey }" />
+  <div v-if="!loading && list.length > 0" class="musicList flex h-full min-h-0 flex-col pt-[15px]">
+    <div v-if="needSearch" class="search shrink-0">
+      <el-input
+        v-model="searchKey"
+        prefix-icon="Search"
+        clearable
+        placeholder="搜索"
+        :class="{ active: isFocus || searchKey }"
+        @focus="isFocus = true"
+        @blur="isFocus = false"
+      />
     </div>
-    <div class="list mt-[15px]">
-      <div class="list-title " v-if="needTitle">
-        <div v-for="config in normalizedColumns" v-show="!config.hidden" :key="config.title" class="title-item"
-          :class="config.class" :style="config._style">
+
+    <div class="list flex min-h-0 flex-1 flex-col pt-[15px]">
+      <div v-if="needTitle" class="list-title shrink-0">
+        <div
+          v-for="config in normalizedColumns"
+          v-show="!config.hidden"
+          :key="config.title"
+          class="title-item"
+          :class="config.class"
+          :style="config._style"
+        >
           {{ config.title }}
         </div>
       </div>
-      <div class="list-container">
-        <ContextMenu v-for="(value, index) in chunkList" :key="value.id" :items="getContextMenuList(props.type, value)"
-          @select="(item) => handleContextMenuSelect(item, value)">
-          <div class="musciList-item" @dblclick="playHandler(value)" @click="currentId = value.id"
-            @contextmenu="currentId = value.id">
-            <div class="item-container flex text-[14px] h-[70px] items-center justify-around"
-              :class="{ 'active': currentId === value.id }">
-              <div v-for="config in normalizedColumns" :key="config.type" :class="config.class" :style="config._style">
-                <template v-if="config.type === 'index'">
-                  {{ index + 1 }}
-                </template>
-                <template v-if="config.type === 'time'">
-                  {{ value._duration }}
-                </template>
-                <template v-if="config.type === 'handle'">
-                  <i v-for="val in config.icon" :key="val" class="iconfont cursor-pointer" :class="{
-                    'icon-xihuan1': val === 'love' && isLike(value),
-                    'icon-xihuan': val === 'love' && !isLike(value)
-                  }" />
-                </template>
-                <template v-if="config.type === 'title'">
-                  <div class="title-box  flex">
-                    <el-image lazy style="width: 50px; height: 50px" :src="value.al.picUrl + '?param=150y150'"
-                      class="title-img" />
-                    <div class="title-info ml-[10px] flex flex-col justify-between flex-1">
-                      <div class="title-name" :class="{ 'active': musicStore.songs?.id === value.id }">{{ value.name }}
-                      </div>
-                      <div class="title-artist" :class="{ 'active': musicStore.songs?.id === value.id }"> <span
-                          v-for="(ar, index) in value.ar" :key="ar.id || index" :style="{
-                            cursor: ar.id ? 'pointer' : 'default',
 
-                          }" @click="goSinger(ar)">
-                          {{ ar.name || '未知歌手' }}
-                          <span v-if="index < value.ar.length - 1" style="color: #969696"> / </span>
-                        </span></div>
-                    </div>
-                  </div>
-                </template>
-                <template v-if="config.type === 'album'">
-                  <div class="album-name">{{ value.al.name || '未知专辑' }}</div>
-                </template>
-              </div>
-            </div>
-          </div>
-        </ContextMenu>
+      <RecycleScroller
+        v-if="virtualEnabled && displayList.length"
+        class="list-container app-scrollbar mt-[10px]"
+        :items="displayList"
+        :item-size="ROW_HEIGHT"
+        key-field="id"
+        :buffer="ROW_HEIGHT * 4"
+        @scroll-end="handleScrollEnd"
+        v-slot="{ item, index }"
+      >
+        <MusicListRow
+          :item="item"
+          :index="index"
+          :columns="normalizedColumns"
+          :active="currentId === item.id"
+          :playing="musicStore.songs?.id === item.id"
+          :is-like="isLike(item)"
+          :menu-items="getContextMenuList(props.type, item)"
+          @play="playHandler"
+          @activate="currentId = $event"
+          @go-singer="goSinger"
+          @menu-select="handleContextMenuSelect"
+        />
+      </RecycleScroller>
 
+      <div v-else-if="displayList.length" class="list-container app-scrollbar mt-[10px]">
+        <MusicListRow
+          v-for="(item, index) in displayList"
+          :key="item.id"
+          :item="item"
+          :index="index"
+          :columns="normalizedColumns"
+          :active="currentId === item.id"
+          :playing="musicStore.songs?.id === item.id"
+          :is-like="isLike(item)"
+          :menu-items="getContextMenuList(props.type, item)"
+          @play="playHandler"
+          @activate="currentId = $event"
+          @go-singer="goSinger"
+          @menu-select="handleContextMenuSelect"
+        />
       </div>
 
+      <div v-else class="empty flex flex-1 items-center justify-center text-[14px] text-white/50">
+        暂无结果
+      </div>
     </div>
   </div>
   <div v-else v-loading="props.loading" class="h-[80px]" element-loading-background="transparent"></div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { RecycleScroller } from 'vue-virtual-scroller'
 import { formattingTime } from '@/utils/utils'
-import { type Columns } from '../musciList'
-import { GetMusicDetailData, PlayList } from '@/types/musicList'
+import { MUSIC_LIST_VIRTUAL_THRESHOLD, type Columns } from '../musciList'
+import type { GetMusicDetailData, PlayList } from '@/types/musicList'
 import { useUserStore, useMusicStore } from '@/store'
-import ContextMenu from '@/components/ContextMenu/index.vue'
 import { useRouter } from 'vue-router'
+import MusicListRow from './MusicListRow.vue'
+
 interface Props {
-  columns: Columns[],
-  list: GetMusicDetailData[],
-  listInfo?: PlayList,
-  needSearch?: boolean,
-  needTitle?: boolean,
-  loading?: boolean,
-  type?: 'playList' | 'drawerList' // 播放列表 或 抽屉列表
-}
-const props = withDefaults(defineProps<Props>(), {
-  needSearch: true,
-  needTitle: true,
-  loading: false,
-  type: 'playList'
-})
-interface Emits {
-  (e: 'play', item: GetMusicDetailData, index: number): void
-  (e: 'updateRuntimeList'): void
-}
-const emit = defineEmits<Emits>()
-const searchKey = ref('')
-const isFocus = ref(false)
-const userStore = useUserStore()
-const likeSet = computed(() => new Set(userStore.userLikeIds))
-const isLike = (data: GetMusicDetailData) => likeSet.value.has(data.id)
-const mylist = ref<GetMusicDetailData[]>([])
-
-const chunkList = ref<GetMusicDetailData[]>([])
-const chunkSize = 20
-let rafId = 0
-const renderChunked = (fullList: GetMusicDetailData[]) => {
-  chunkList.value = []
-  let start = 0
-  cancelAnimationFrame(rafId)
-  function appendChunk() {
-    const next = fullList.slice(start, start + chunkSize)
-    if (!next.length) return
-    chunkList.value.push(...next)
-    start += chunkSize
-    rafId = requestAnimationFrame(appendChunk)
-  }
-  appendChunk()
-}
-
-watch(() => props.list, (val) => {
-  mylist.value = val.map(item => ({
-    ...item,
-    _duration: formattingTime(item.dt),
-    _searchText: [
-      item.name?.toLowerCase() || '',
-      item.al?.name?.toLowerCase() || '',
-      ...(item.ar?.map(a => a.name?.toLowerCase() || '') || [])
-    ].join(' ') //预处理搜索关键词
-  }))
-  renderChunked(mylist.value)
-}, { immediate: true, deep: true })
-
-watch(() => searchKey.value, (val) => {
-  const key = val.trim().toLowerCase()
-  renderChunked(
-    key ? mylist.value.filter(item => item._searchText?.includes(key)) : mylist.value
-  )
-}, { immediate: true })
-
-
-const normalizedColumns = ref(
-  props.columns.map(col => ({
-    ...col,
-    _style: { ...col.style, width: col.width }
-  }))
-)
-const currentId = ref<number>(0)
-// 双击击播放音乐
-const musicStore = useMusicStore()
-const playHandler = (item: GetMusicDetailData) => {
-  const index = mylist.value.findIndex(i => i.id === item.id)
-  // 区分播放列表和抽屉列表点击事件
-  if (props.type === 'drawerList') {
-    if (musicStore.songs?.id === item.id) {
-      return window.$audio.togglePlay()
-    }
-    emit('play', item, index)
-
-  } else {
-    // 当前音乐列表是当前播放的音乐
-    if (musicStore.currentItem?.id === musicStore.runtimeList?.id) {
-
-      if (musicStore.songs?.id === item.id) {
-        return window.$audio.togglePlay()
-      }
-    }
-    emit('play', item, index)
-    // 播放列表不是当前播放的音乐更新播放列表
-    if (musicStore.runtimeList?.id !== musicStore.currentItem?.id) {
-      emit('updateRuntimeList')
-    }
-  }
-
-
-}
-const router = useRouter()
-// 前往歌手页
-const goSinger = (ar) => {
-
-
-  if (ar.id == 0) {
-    return
-  }
-
-  router.push({
-    path: '/singerInfo',
-    query: {
-      id: ar.id,
-
-    }
-  })
+  columns: Columns[]
+  list: GetMusicDetailData[]
+  listInfo?: PlayList
+  needSearch?: boolean
+  needTitle?: boolean
+  loading?: boolean
+  type?: 'playList' | 'drawerList'
+  virtualThreshold?: number
+  forceVirtual?: boolean
 }
 
 interface MenuItem {
   label: string
   value: string
 }
-//右键菜单按钮
-const getContextMenuList = (type: 'playList' | 'drawerList', item: GetMusicDetailData): MenuItem[] => {
-  const menu: MenuItem[] = []
 
-  // 根据id判断是否是当前播放的音乐，根据播放状态判断是暂停还是播放，播放需特殊处理
-  menu.push({
-    label: item.id === musicStore.songs?.id && musicStore.isPlay ? '暂停' : '播放',
-    value: 'play',
+type MusicListItem = GetMusicDetailData & {
+  _duration: string
+  _searchText: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  needSearch: true,
+  needTitle: true,
+  loading: false,
+  type: 'playList',
+  virtualThreshold: MUSIC_LIST_VIRTUAL_THRESHOLD,
+  forceVirtual: false
+})
+
+const emit = defineEmits<{
+  (e: 'play', item: GetMusicDetailData, index: number): void
+  (e: 'updateRuntimeList'): void
+  (e: 'reachBottom'): void
+}>()
+
+// 固定行高，用于虚拟列表计算可视区域。
+const ROW_HEIGHT = 70
+
+// 页面跳转和全局状态依赖。
+const router = useRouter()
+const userStore = useUserStore()
+const musicStore = useMusicStore()
+
+// 搜索框和当前激活行的本地状态。
+const searchKey = ref('')
+const isFocus = ref(false)
+const currentId = ref<number>(0)
+
+// 用户喜欢集合和搜索关键字的派生状态。
+const likeSet = computed(() => new Set(userStore.userLikeIds))
+const searchKeyValue = computed(() => searchKey.value.trim().toLowerCase())
+
+// 控制何时启用虚拟列表，避免小列表过度复杂化。
+const virtualEnabled = computed(() => props.forceVirtual || props.list.length >= props.virtualThreshold)
+
+// 给列配置补齐行内样式，模板里直接消费。
+const normalizedColumns = computed(() => props.columns.map(col => ({
+  ...col,
+  _style: { ...col.style, width: col.width }
+})))
+
+// 统一补齐歌曲的展示字段。
+const preparedList = computed(() => props.list.map(normalizeItem))
+
+// 搜索后的最终展示列表。
+const displayList = computed(() => {
+  if (!searchKeyValue.value) return preparedList.value
+  return preparedList.value.filter(item => item._searchText.includes(searchKeyValue.value))
+})
+
+// 数据被清空时，顺手清掉当前激活行。
+watch(
+  () => props.list.length,
+  (length) => {
+    if (!length) currentId.value = 0
+  }
+)
+
+// 补齐展示字段和搜索字段，避免模板里反复计算。
+function normalizeItem(item: GetMusicDetailData): MusicListItem {
+  return {
+    ...item,
+    _duration: formattingTime(item.dt),
+    _searchText: [
+      item.name?.toLowerCase() || '',
+      item.al?.name?.toLowerCase() || '',
+      ...(item.ar?.map(artist => artist.name?.toLowerCase() || '') || [])
+    ].join(' ')
+  }
+}
+
+// 判断歌曲是否在用户喜欢列表里。
+function isLike(item: GetMusicDetailData) {
+  return likeSet.value.has(item.id)
+}
+
+// 双击播放：抽屉列表和普通歌单的运行列表更新规则不同。
+function playHandler(item: GetMusicDetailData) {
+  const index = preparedList.value.findIndex(song => song.id === item.id)
+
+  if (props.type === 'drawerList') {
+    if (musicStore.songs?.id === item.id) {
+      return window.$audio.togglePlay()
+    }
+    emit('play', item, index)
+    return
+  }
+
+  if (musicStore.currentItem?.id === musicStore.runtimeList?.id && musicStore.songs?.id === item.id) {
+    return window.$audio.togglePlay()
+  }
+
+  emit('play', item, index)
+
+  if (musicStore.runtimeList?.id !== musicStore.currentItem?.id) {
+    emit('updateRuntimeList')
+  }
+}
+
+// 跳转歌手详情，id 为 0 的占位歌手不跳转。
+function goSinger(artist: GetMusicDetailData['ar'][number]) {
+  if (!artist.id) return
+
+  router.push({
+    path: '/singerInfo',
+    query: {
+      id: artist.id
+    }
   })
+}
 
-  // 如果不是当前播放的音乐，添加下一首播放按钮
+// 根据列表来源和歌曲状态生成右键菜单。
+function getContextMenuList(type: 'playList' | 'drawerList', item: GetMusicDetailData): MenuItem[] {
+  const menu: MenuItem[] = [
+    {
+      label: item.id === musicStore.songs?.id && musicStore.isPlay ? '暂停' : '播放',
+      value: 'play'
+    }
+  ]
+
   if (item.id !== musicStore.songs?.id) {
     menu.push({
       label: '下一首播放',
@@ -212,15 +236,13 @@ const getContextMenuList = (type: 'playList' | 'drawerList', item: GetMusicDetai
     })
   }
 
-  // 如果是一般类型音乐则有评论 0 普通 1 2 网盘音乐
-  if (item.t == 0) {
+  if (item.t === 0) {
     menu.push({
       label: '评论',
       value: 'comment'
     })
   }
 
-  // 音乐侧边栏
   if (type === 'drawerList') {
     menu.push({
       label: '从播放列表删除',
@@ -228,7 +250,6 @@ const getContextMenuList = (type: 'playList' | 'drawerList', item: GetMusicDetai
     })
   }
 
-  // 我的歌单
   if (props.listInfo?.userId === userStore.userInfo?.account.id) {
     menu.push({
       label: '从歌单删除',
@@ -238,21 +259,23 @@ const getContextMenuList = (type: 'playList' | 'drawerList', item: GetMusicDetai
 
   return menu
 }
-// 右键菜单点击事件
-const handleContextMenuSelect = (item: MenuItem, value: GetMusicDetailData) => {
 
+// 处理右键菜单对播放队列的增删和插播。
+function handleContextMenuSelect(menuItem: MenuItem, item: GetMusicDetailData) {
   if (!musicStore.runtimeList) {
     musicStore.runtimeList = { id: 0, tracks: [] }
   }
 
   const tracks = musicStore.runtimeList.tracks!
   const currentIndex = musicStore.currentIndex
-  const index = tracks.findIndex(i => i.id === value.id)
+  const index = tracks.findIndex(song => song.id === item.id)
+
   const insertNextToCurrent = () => {
     const insertIndex = currentIndex + 1
-    tracks.splice(insertIndex, 0, value)
+    tracks.splice(insertIndex, 0, item)
     return insertIndex
   }
+
   const removeFromList = (removeIndex: number) => {
     tracks.splice(removeIndex, 1)
     if (removeIndex < currentIndex) {
@@ -260,76 +283,99 @@ const handleContextMenuSelect = (item: MenuItem, value: GetMusicDetailData) => {
     }
   }
 
-  switch (item.value) {
+  switch (menuItem.value) {
     case 'play':
-
-      if (index === currentIndex) {
-        window.$audio.togglePlay()
-        return
-      }
-
-      // 如果已经在列表中，先移除
-      if (index >= 0) {
-        removeFromList(index)
-      }
-
-      // 插入到当前播放后
-      let newIndex: number
-
-      if (tracks.length === 0) {
-        tracks.push(value)
-        newIndex = 0
-      } else {
-        newIndex = insertNextToCurrent()
-      }
-      musicStore.getMusicUrlHandler(value, newIndex)
+      playFromContextMenu(item, index, currentIndex, tracks, removeFromList, insertNextToCurrent)
       break
     case 'pause':
       window.$audio.togglePlay()
       break
     case 'nextPlay':
-      if (index == currentIndex + 1 && currentIndex !== -1) return
-      if (index >= 0) {
-        removeFromList(index)
-      }
-      if (tracks.length === 0) {
-        tracks.push(value)
-        musicStore.getMusicUrlHandler(value, 0)
-      } else {
-        insertNextToCurrent()
-      }
-
-
+      addToNextPlay(item, index, currentIndex, tracks, removeFromList, insertNextToCurrent)
       break
     case 'comment':
-
       break
     case 'removePlayList':
-      if (index < 0) return
-
-      tracks.splice(index, 1)
-
-      if (tracks.length === 0) {
-        musicStore.clearRuntimeList()
-        return
-      }
-
-      if (index === currentIndex) {
-        musicStore.cutSongHandler(true)
-      } else if (index < currentIndex) {
-        musicStore.currentIndex--
-      }
-
-
+      removeRuntimeTrack(index, currentIndex, tracks)
       break
     case 'removeMyList':
-
       break
   }
 }
 
+// 从菜单点播放时，把目标歌曲插到当前歌曲后并立即播放。
+function playFromContextMenu(
+  item: GetMusicDetailData,
+  index: number,
+  currentIndex: number,
+  tracks: GetMusicDetailData[],
+  removeFromList: (removeIndex: number) => void,
+  insertNextToCurrent: () => number
+) {
+  if (index === currentIndex) {
+    window.$audio.togglePlay()
+    return
+  }
 
+  if (index >= 0) {
+    removeFromList(index)
+  }
 
+  const newIndex = tracks.length === 0
+    ? tracks.push(item) - 1
+    : insertNextToCurrent()
+
+  musicStore.getMusicUrlHandler(item, newIndex)
+}
+
+// 只插播到下一首，不打断当前播放。
+function addToNextPlay(
+  item: GetMusicDetailData,
+  index: number,
+  currentIndex: number,
+  tracks: GetMusicDetailData[],
+  removeFromList: (removeIndex: number) => void,
+  insertNextToCurrent: () => number
+) {
+  if (index === currentIndex + 1 && currentIndex !== -1) return
+
+  if (index >= 0) {
+    removeFromList(index)
+  }
+
+  if (tracks.length === 0) {
+    tracks.push(item)
+    musicStore.getMusicUrlHandler(item, 0)
+    return
+  }
+
+  insertNextToCurrent()
+}
+
+// 从抽屉播放队列删除歌曲，并修正当前播放下标。
+function removeRuntimeTrack(index: number, currentIndex: number, tracks: GetMusicDetailData[]) {
+  if (index < 0) return
+
+  tracks.splice(index, 1)
+
+  if (tracks.length === 0) {
+    musicStore.clearRuntimeList()
+    return
+  }
+
+  if (index === currentIndex) {
+    musicStore.cutSongHandler(true)
+  } else if (index < currentIndex) {
+    musicStore.currentIndex--
+  }
+}
+
+// 虚拟列表滚到底时通知父组件继续分页。
+function handleScrollEnd() {
+  if (virtualEnabled.value) {
+    emit('reachBottom')
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -337,11 +383,14 @@ const handleContextMenuSelect = (item: MenuItem, value: GetMusicDetailData) => {
   color: #ff6600;
 }
 
+.musicList {
+  min-height: 0;
+}
+
 .search {
   display: flex;
   justify-content: flex-start;
   transition: all 0.3s ease;
-
 
   .el-input {
     width: 80px;
@@ -354,7 +403,6 @@ const handleContextMenuSelect = (item: MenuItem, value: GetMusicDetailData) => {
     ::v-deep(.el-input__wrapper) {
       border-radius: 50px;
       transition: all 0.3s ease;
-
       border: none;
 
       &.is-focus {
@@ -365,9 +413,7 @@ const handleContextMenuSelect = (item: MenuItem, value: GetMusicDetailData) => {
 }
 
 .list {
-  .empty {
-    //margin-left: 20px;
-  }
+  min-height: 0;
 }
 
 .list-title {
@@ -387,53 +433,8 @@ const handleContextMenuSelect = (item: MenuItem, value: GetMusicDetailData) => {
 }
 
 .list-container {
-  .musciList-item {
-    .item-container {
-      color: $darkText;
-      border-radius: 10px;
-
-
-      &.active {
-        background-color: rgba(255, 255, 255, 0.05);
-      }
-
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-      }
-
-      .title-box {
-        width: 90%;
-
-        .title-img {
-          border-radius: 10px;
-        }
-
-        .title-info {
-          .active {
-            color: rgb(255, 60, 60) !important;
-          }
-
-          .title-name {
-            @include textOverflow(1);
-            font-size: 15px;
-            font-weight: bold;
-
-          }
-
-          .title-artist {
-            @include textOverflow(1);
-            font-size: 13px;
-            color: rgba(150, 150, 150, 0.60);
-          }
-        }
-
-      }
-
-      .album-name {
-        width: 90%;
-        @include textOverflow(1);
-      }
-    }
-  }
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 </style>

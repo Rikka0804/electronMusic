@@ -1,23 +1,28 @@
 <template>
-  <div class="singerInfo mt-[15px]">
+  <div class="singerInfo mt-[15px] h-full flex flex-col min-h-0">
     <singerCard :user-info="singerInfo?.artist" :loading="loading" @play-all="playAllHandler" />
-    <div class="hotSong mt-[10px]">
+    <div class="hotSong mt-[10px] flex flex-1 min-h-0 flex-col">
       <div class="text-[18px] cursor-pointer" @click="handleAll">
         热门歌曲>
       </div>
-      <MusicList :needSearch="false" :columns="columns" :list="singerInfo?.hotSongs ?? []"
-        @updateRuntimeList="handleUpdateRuntimeList" @play="handlePlay" />
+      <MusicList
+        class="flex-1 min-h-0"
+        :needSearch="false"
+        :columns="columns"
+        :list="singerInfo?.hotSongs ?? []"
+        @updateRuntimeList="handleUpdateRuntimeList"
+        @play="handlePlay"
+      />
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
 import { columns } from '@/views/playList/musciList'
-import MusicList from '@/views/playList/components/MusicList.vue';
+import MusicList from '@/views/playList/components/MusicList.vue'
 import { useMusicStore } from '@/store'
 import { watch, ref } from 'vue'
-import { useRoute,useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router'
 import { getSingerDetailApi } from '@/api/search'
 import type { singerDetail } from '@/types/search'
 import singerCard from './components/singerCard.vue'
@@ -29,6 +34,7 @@ const route = useRoute()
 const themeStore = useThemeStore()
 const loading = ref<boolean>(false)
 const singerInfo = ref<singerDetail | null>(null)
+
 const getSingerIfno = async () => {
   if (!route.query.id) return
   loading.value = true
@@ -47,39 +53,28 @@ const getSingerIfno = async () => {
 }
 
 const handleUpdateRuntimeList = () => {
-
-  musicStore.updateRuntimeList({ ...musicStore.currentItem });
+  musicStore.updateRuntimeList({ ...musicStore.currentItem })
   musicStore.orderStatusVal = 1
 }
-// 播放歌曲
+
 const handlePlay = async (item, index) => {
-
   return await musicStore.getMusicUrlHandler(item, index)
-
-
 }
-// 播放全部
-const playAllHandler = () => {
 
-  // 点击播放全部时，判断当前播放列表是否为当前播放列表
-  // if (musicStore.runtimeList?.id === playListState.listInfo.id) {
-  //   return
-  // }
+const playAllHandler = () => {
   handleUpdateRuntimeList()
   musicStore.initPlay()
-
 }
 
 const router = useRouter()
-// 前往全部歌曲
+
 const handleAll = () => {
   router.push({
-    path:'/allSong',
-    query:{
-      id:Number(route.query.id),
+    path: '/allSong',
+    query: {
+      id: Number(route.query.id),
       size: singerInfo.value?.artist.musicSize
     }
-
   })
 }
 
@@ -92,7 +87,6 @@ watch(
     immediate: true
   }
 )
-
 </script>
 
 <style scoped lang="scss"></style>

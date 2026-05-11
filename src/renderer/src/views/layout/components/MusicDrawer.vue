@@ -14,9 +14,9 @@
         清空
       </div>
     </div>
-    <div class="drawer-list app-scrollbar flex-1 overflow-y-auto overflow-x-hidden">
-      <MusicList :columns="drawerColumns" :list="runtimeTracks" :needSearch="false"
-        :needTitle="false" type="drawerList" @play="handlePlay" />
+    <div class="drawer-list flex min-h-0 flex-1 overflow-hidden">
+      <MusicList class="flex-1 min-h-0" :columns="drawerColumns" :list="runtimeTracks" :needSearch="false"
+        :needTitle="false" type="drawerList" forceVirtual @play="handlePlay" />
     </div>
   </el-drawer>
 

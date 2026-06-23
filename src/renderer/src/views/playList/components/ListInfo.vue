@@ -117,7 +117,7 @@ const wentUserInfo = (id: number) => {
   height: 180px;
   border-radius: 10px;
   position: relative;
-
+  flex-shrink: 0;
   .count {
     color: white;
     position: absolute;
@@ -130,6 +130,9 @@ const wentUserInfo = (id: number) => {
 }
 
 .right {
+  flex: 1;
+  min-width: 0;
+
   >div {
     margin-bottom: 10px;
   }

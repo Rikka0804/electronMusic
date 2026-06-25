@@ -53,6 +53,7 @@ export interface searchSingerItem {
 // 搜索歌手返回结果
 export interface searchSingerRes {
   result:{
+    artistCount: number
     artists: searchSingerItem[]
   }
 
